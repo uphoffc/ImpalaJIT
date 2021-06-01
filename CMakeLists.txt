@@ -35,8 +35,7 @@ set(include_dirs
         compiler/frontend/include
         compiler/semantic_analysis/include
         compiler/code-gen/include
-        compiler/code-gen/assembly/include
-        )
+        compiler/code-gen/assembly/include)
 
 include_directories(${include_dirs})
 
@@ -89,7 +88,7 @@ if( PKG_CONFIG_FOUND )
 endif( PKG_CONFIG_FOUND )
 
 if( SHARED_LIB )
-    add_library( impalajit SHARED ${source_files})
+    add_library( impalajit SHARED ${source_files} )
     target_link_libraries( impalajit ${math_library} )
 endif( SHARED_LIB )
 

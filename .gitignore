@@ -2,3 +2,4 @@
 minilua
 build
 lib/*
+cmake-build-*
