@@ -32,11 +32,12 @@ public:
         nodes.push_back(_if_body);
     }
 
-    void codegen() override {
+    llvm::Value* codegen(impala::Toolbox& tools) override {
       for (auto node: nodes) {
-        node->codegen();
+        node->codegen(tools);
       }
       std::cout << "IfStmtNode" << std::endl;
+      return nullptr;
     }
 };
 
@@ -52,11 +53,12 @@ public:
         nodes.push_back(_else_body);
     }
 
-    void codegen() override {
+    llvm::Value* codegen(impala::Toolbox& tools) override {
       for (auto node: nodes) {
-        node->codegen();
+        node->codegen(tools);
       }
       std::cout << "IfElseStmtNode" << std::endl;
+      return nullptr;
     }
 };
 
@@ -72,11 +74,12 @@ public:
     {
     }
 
-    void codegen() override {
+    llvm::Value* codegen(impala::Toolbox& tools) override {
       for (auto node: nodes) {
-        node->codegen();
+        node->codegen(tools);
       }
       std::cout << "IfBodyNode" << std::endl;
+      return nullptr;
     }
 };
 
@@ -92,11 +95,12 @@ public:
     {
     }
 
-    void codegen() override {
+    llvm::Value* codegen(impala::Toolbox& tools) override {
       for (auto node: nodes) {
-        node->codegen();
+        node->codegen(tools);
       }
       std::cout << "ElseBodyNode" << std::endl;
+      return nullptr;
     }
 };
 #endif //IMPALAJIT_COMPLEX_EXPRESSION_H

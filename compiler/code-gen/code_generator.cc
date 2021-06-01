@@ -17,7 +17,7 @@
  * THE SOFTWARE.
  */
 
-#include "engine/engine.h"
+#include "engine.h"
 #include <code_generator.hh>
 #include <expression_nodes.h>
 #include <assignment_nodes.h>
@@ -25,6 +25,7 @@
 #include <external_function_nodes.h>
 #include <calculation_helper.hh>
 #include <ptr_map_container.hh>
+#include "llvm/IR/Verifier.h"
 #include <stdexcept>
 
 
@@ -55,17 +56,23 @@ CodeGenerator::~CodeGenerator()
 dasm_gen_func CodeGenerator::generateCode(FunctionContext* &functionContext)
 {
     FunctionPtrMap::initialize_map();
-    std::cout << "function name: " << functionContext->name << std::endl;
     auto &jit = Jit::getJit();
-    auto &dl = jit.getDataLayout();
     {
       auto lock = jit.getLock();
-      auto &context = jit.getContext();
-      std::cout << "getIndexTypeSicd zeInBits: " << dl.getIndexTypeSizeInBits(llvm::Type::getVoidTy(context)) << std::endl;
+
+      auto& context = jit.getContext();
+      auto builder = std::make_unique<llvm::IRBuilder<>>(context);
+
+      impala::Toolbox tools(context, *builder);
+      auto function = this->genFunctionProto(functionContext, *jit.getCurrentModule(), tools);
+      functionContext->root->codegen(tools);
+
+      llvm::verifyFunction(*function, &llvm::outs());
+      Jit::printIRFunction(function);
     }
-
-
-    functionContext->root->codegen();
+    jit.registerModule();
+    auto generatedFunction = reinterpret_cast<dasm_gen_func>(jit.lookup(functionContext->name).getAddress());
+    std::cout << "hello: " << generatedFunction(2.0, 20.0) << std::endl;
 
     assembly.initialize(functionContext->parameters.size());
     assembly.prologue();
@@ -76,6 +83,36 @@ dasm_gen_func CodeGenerator::generateCode(FunctionContext* &functionContext)
 
     return assembly.linkAndEncode();
 }
+
+
+llvm::Function* CodeGenerator::genFunctionProto(FunctionContext* &functionContext,
+                                     llvm::Module& currModule,
+                                     impala::Toolbox &tools) {
+
+  const auto numParams = functionContext->parameters.size();
+  auto typeReal = llvm::Type::getDoubleTy(tools.context);
+  std::vector<llvm::Type*> paramTypes(numParams, typeReal);
+
+  // TODO: check whether a function proto has already been added
+
+  llvm::FunctionType *functionProto = llvm::FunctionType::get(typeReal, paramTypes, false);
+  auto function = llvm::Function::Create(functionProto,
+                                         llvm::Function::ExternalLinkage,
+                                         functionContext->name,
+                                         currModule);
+
+  const auto& params = functionContext->parameters;
+  for (size_t i = 0; i < params.size(); ++i) {
+    llvm::Argument* arg = function->getArg(i);
+    arg->setName(params[i]);
+    tools.table[params[i]] = arg;
+  }
+  llvm::BasicBlock *entryBlock = llvm::BasicBlock::Create(tools.context, "entry", function);
+  tools.builder.SetInsertPoint(entryBlock);
+
+  return function;
+}
+
 
 /**
  * @see code_generator.hh

@@ -35,17 +35,14 @@ public:
     virtual ~AssignmentNode()
     {
     }
-/*
-    virtual void evaluate() {
-        node->evaluate();
-        assembly.storeLocalVariable();
-    }*/
 
-    virtual void codegen() {
-    for (auto node: nodes) {
-      node->codegen();
-    }
+
+    llvm::Value* codegen(impala::Toolbox& tools) override {
+      for (auto node: nodes) {
+        node->codegen(tools);
+      }
       std::cout << "am root" << std::endl;
+      return nullptr;
     }
 };
 #endif //IMPALAJIT_ASSIGNMENT_EXPRESSION_HH

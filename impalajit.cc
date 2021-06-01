@@ -18,6 +18,7 @@
  */
 
 #include <impalajit.hh>
+#include <engine.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -75,12 +76,14 @@ void impalajit::Compiler::loadFunctionDefinitionsFromInputFiles(std::string _con
 }
 
 void impalajit::Compiler::compile(){
+    Jit::getJit().reserveModule();
     for(auto& definition: functionDefinitions) {
         auto parsedFunctions = driver.parse_string(definition);
         functionMap.insert(parsedFunctions.begin(), parsedFunctions.end());
         parameterCountMap.insert(std::make_pair(parsedFunctions.begin()->first, driver.getParameterCount()));
         driver.deleteFunctionContext();
     }
+    // TODO: register a module
 }
 
 dasm_gen_func impalajit::Compiler::getFunction(std::string functionName) {

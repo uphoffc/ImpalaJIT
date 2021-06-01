@@ -51,7 +51,7 @@ std::map<std::string,dasm_gen_func> Driver::parse_stream(std::istream& in)
     CodeGenerator codeGenerator;
     dasm_gen_func function = codeGenerator.generateCode(functionContext);
 
-    std::map<std::string,dasm_gen_func> resultMap;
+    std::map<std::string, dasm_gen_func> resultMap;
     resultMap.insert(std::make_pair(functionContext->name, function));
 
     return resultMap;

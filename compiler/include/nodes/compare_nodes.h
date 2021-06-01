@@ -33,11 +33,12 @@ public:
         nodes.push_back(_left);
     }
 
-    void codegen() override {
+    llvm::Value* codegen(impala::Toolbox& tools) override {
       for (auto node: nodes) {
-        node->codegen();
+        node->codegen(tools);
       }
       std::cout << "CompareNode" << std::endl;
+      return nullptr;
     }
 };
 

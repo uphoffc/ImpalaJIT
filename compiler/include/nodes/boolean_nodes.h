@@ -30,11 +30,12 @@ public:
     {
     }
 
-    void codegen() override {
+    llvm::Value* codegen(impala::Toolbox& tools) override {
       for (auto node: nodes) {
-        node->codegen();
+        node->codegen(tools);
       }
       std::cout << "BooleanAndNode" << std::endl;
+      return nullptr;
     }
 };
 
@@ -47,11 +48,12 @@ public:
     {
     }
 
-    void codegen() override {
+    llvm::Value* codegen(impala::Toolbox& tools) override {
       for (auto node: nodes) {
-        node->codegen();
+        node->codegen(tools);
       }
       std::cout << "BooleanOrNode" << std::endl;
+      return nullptr;
     }
 };
 

@@ -23,6 +23,7 @@
 #include <types.hh>
 #include <internal_types.hh>
 #include <function_context.h>
+#include <toolbox.h>
 #include <vector>
 #include <map>
 #include <assembly__sse_4_1.hh>
@@ -37,6 +38,10 @@ private:
     unsigned dynamicLabelCount; // Global count of assigned
 
     Assembly__SSE_4_1 assembly;
+
+    llvm::Function* genFunctionProto(FunctionContext* &functionContext,
+                                     llvm::Module& currModule,
+                                     impala::Toolbox &tools);
 
     /**
      * This functions performs the depth-first search algorithm.

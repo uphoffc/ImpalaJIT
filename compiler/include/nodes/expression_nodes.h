@@ -31,11 +31,12 @@ public:
     {
     }
 
-    void codegen() override {
+    llvm::Value* codegen(impala::Toolbox& tools) override {
       for (auto node: nodes) {
-        node->codegen();
+        node->codegen(tools);
       }
       std::cout << "ConstantNode" << std::endl;
+      return nullptr;
     }
 };
 
@@ -47,11 +48,10 @@ public:
             : Node(VARIABLE), name(_name) {
     }
 
-    void codegen() override {
-      for (auto node: nodes) {
-        node->codegen();
-      }
+    llvm::Value* codegen(impala::Toolbox& tools) override {
+      assert(nodes.size() == 0 && "VariableNode must have no children");
       std::cout << "VariableNode" << std::endl;
+      return tools.table.find(name) != tools.table.end() ? tools.table[name] : nullptr;
     }
 };
 
@@ -64,11 +64,12 @@ public:
         nodes.push_back(_node);
     }
 
-    void codegen() override {
+    llvm::Value* codegen(impala::Toolbox& tools) override {
       for (auto node: nodes) {
-        node->codegen();
+        node->codegen(tools);
       }
       std::cout << "NegationNode" << std::endl;
+      return nullptr;
     }
 };
 
@@ -82,11 +83,12 @@ public:
         nodes.push_back(_right);
     }
 
-    void codegen() override {
+    llvm::Value* codegen(impala::Toolbox& tools) override {
       for (auto node: nodes) {
-        node->codegen();
+        node->codegen(tools);
       }
       std::cout << "AdditionNode" << std::endl;
+      return nullptr;
     }
 };
 
@@ -100,11 +102,12 @@ public:
         nodes.push_back(_right);
     }
 
-    void codegen() override {
+    llvm::Value* codegen(impala::Toolbox& tools) override {
       for (auto node: nodes) {
-        node->codegen();
+        node->codegen(tools);
       }
       std::cout << "SubtractionNode" << std::endl;
+      return nullptr;
     }
 };
 
@@ -118,11 +121,13 @@ public:
         nodes.push_back(_right);
     }
 
-    void codegen() override {
-      for (auto node: nodes) {
-        node->codegen();
-      }
+    llvm::Value* codegen(impala::Toolbox& tools) override {
+      assert(nodes.size() == 2 && "MultiplicationNode must be a binary op");
+      auto lhs = nodes[0]->codegen(tools);
+      auto rhs = nodes[1]->codegen(tools);
+
       std::cout << "MultiplicationNode" << std::endl;
+      return tools.builder.CreateFMul(lhs, rhs);
     }
 };
 
@@ -136,11 +141,12 @@ public:
         nodes.push_back(_right);
     }
 
-    void codegen() override {
+    llvm::Value* codegen(impala::Toolbox& tools) override {
       for (auto node: nodes) {
-        node->codegen();
+        node->codegen(tools);
       }
       std::cout << "DivisionNode" << std::endl;
+      return nullptr;
     }
 };
 
@@ -154,11 +160,12 @@ public:
         nodes.push_back(_base);
     }
 
-    void codegen() override {
+    llvm::Value* codegen(impala::Toolbox& tools) override {
       for (auto node: nodes) {
-        node->codegen();
+        node->codegen(tools);
       }
       std::cout << "PowerNode" << std::endl;
+      return nullptr;
     }
 };
 
