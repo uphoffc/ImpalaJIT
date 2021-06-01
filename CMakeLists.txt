@@ -22,7 +22,7 @@ option( SHARED_LIB "Compile the shared library" OFF )
 option( STATIC_LIB "Compile the static library" ON )
 option( TESTS "Enable Tests" OFF )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -O3")
 
 project(ImpalaJIT)
 
@@ -56,7 +56,8 @@ set(source_files ${source_files}
         compiler/code-gen/include/ptr_map_container.hh
         compiler/code-gen/include/calculation_helper.hh
         compiler/code-gen/code_generator.cc
-        compiler/code-gen/assembly/assembly__sse_4_1.cc)
+        compiler/code-gen/assembly/assembly__sse_4_1.cc
+        compiler/code-gen/engine/engine.cpp)
 
 ##### pkg-config #####
 find_package( PkgConfig )
@@ -87,15 +88,26 @@ if( PKG_CONFIG_FOUND )
     install( FILES ${CMAKE_CURRENT_BINARY_DIR}/impalajit.pc	DESTINATION lib/pkgconfig )
 endif( PKG_CONFIG_FOUND )
 
+
+find_package(LLVM 10.0 REQUIRED CONFIG)
+LLVM_MAP_COMPONENTS_TO_LIBNAMES(LLVM_LIBS core orcjit native)
+message(STATUS "LLVM: ${LLVM_VERSION}")
+
+
 if( SHARED_LIB )
     add_library( impalajit SHARED ${source_files} )
-    target_link_libraries( impalajit ${math_library} )
+    target_link_libraries( impalajit PRIVATE ${math_library} ${LLVM_LIBS} )
+    target_include_directories( impalajit PRIVATE ${LLVM_INCLUDE_DIRS} )
+    target_compile_definitions( impalajit PRIVATE ${LLVM_DEFINITIONS} )
 endif( SHARED_LIB )
 
 if( STATIC_LIB )
     add_library( impalajit-static STATIC ${source_files} )
-    set_target_properties( impalajit-static
-            PROPERTIES OUTPUT_NAME impalajit )
+    set_target_properties( impalajit-static PROPERTIES OUTPUT_NAME impalajit )
+
+    target_link_libraries( impalajit-static PRIVATE ${math_library} ${LLVM_LIBS} )
+    target_include_directories( impalajit-static PRIVATE ${LLVM_INCLUDE_DIRS} )
+    target_compile_definitions( impalajit-static PRIVATE ${LLVM_DEFINITIONS} )
 endif( STATIC_LIB )
 
 # Tests

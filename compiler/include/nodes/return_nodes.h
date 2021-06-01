@@ -30,5 +30,12 @@ public:
     {
         nodes.push_back(_node);
     }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "am return" << std::endl;
+    }
 };
 #endif //IMPALAJIT_RETURN_NODE_H

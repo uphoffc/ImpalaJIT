@@ -32,6 +32,13 @@ public:
         nodes.push_back(_right);
         nodes.push_back(_left);
     }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "CompareNode" << std::endl;
+    }
 };
 
 

@@ -84,8 +84,8 @@ void SemanticAnalyzer::evaluateAst(FunctionContext* &functionContext, Node* &nod
 
 
 void SemanticAnalyzer::dsfUtil(FunctionContext* &functionContext, Node* &node) {
-    for(std::vector<Node*>::iterator it = node->nodes.begin(); it != node->nodes.end(); ++it) {
-        evaluateAst(functionContext, (*it));
+    for (auto node: node->nodes) {
+        evaluateAst(functionContext, node);
     }
 }
 

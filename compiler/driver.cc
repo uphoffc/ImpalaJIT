@@ -65,7 +65,7 @@ std::map<std::string,dasm_gen_func> Driver::parse_string(const std::string &inpu
 
 void Driver::deleteFunctionContext(){
     delete functionContext;
-    functionContext = NULL;
+    functionContext = nullptr;
 }
 
 void Driver::setFunctionContext(FunctionContext* _functionContext){

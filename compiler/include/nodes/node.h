@@ -22,6 +22,7 @@
 
 #include <internal_types.hh>
 #include <vector>
+#include <iostream>
 
 class Node
 {
@@ -37,6 +38,8 @@ public:
     {
         nodes.clear();
     }
+
+    virtual void codegen() = 0;
 };
 
 class RootNode : public Node
@@ -45,6 +48,13 @@ public:
     RootNode()
             : Node(ROOT)
     {
+    }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "am root" << std::endl;
     }
 };
 

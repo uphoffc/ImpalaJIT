@@ -30,6 +30,13 @@ public:
             : Node(CONSTANT), value(_value)
     {
     }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "ConstantNode" << std::endl;
+    }
 };
 
 class VariableNode : public Node {
@@ -38,6 +45,13 @@ public:
     std::string &name;
     VariableNode(std::string &_name)
             : Node(VARIABLE), name(_name) {
+    }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "VariableNode" << std::endl;
     }
 };
 
@@ -48,6 +62,13 @@ public:
             : Node(NEGATION)
     {
         nodes.push_back(_node);
+    }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "NegationNode" << std::endl;
     }
 };
 
@@ -60,6 +81,13 @@ public:
         nodes.push_back(_left);
         nodes.push_back(_right);
     }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "AdditionNode" << std::endl;
+    }
 };
 
 class SubtractionNode : public Node
@@ -70,6 +98,13 @@ public:
     {
         nodes.push_back(_left);
         nodes.push_back(_right);
+    }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "SubtractionNode" << std::endl;
     }
 };
 
@@ -82,6 +117,13 @@ public:
         nodes.push_back(_left);
         nodes.push_back(_right);
     }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "MultiplicationNode" << std::endl;
+    }
 };
 
 class DivisionNode : public Node
@@ -93,6 +135,13 @@ public:
         nodes.push_back(_left);
         nodes.push_back(_right);
     }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "DivisionNode" << std::endl;
+    }
 };
 
 class PowerNode : public Node
@@ -103,6 +152,13 @@ public:
     {
         nodes.push_back(_exponent);
         nodes.push_back(_base);
+    }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "PowerNode" << std::endl;
     }
 };
 

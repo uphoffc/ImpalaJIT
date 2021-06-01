@@ -67,16 +67,16 @@ void impalajit::Compiler::loadFunctionDefinitionsFromInputFiles(std::string _con
         start = end + 1;
     }
 
-    for(std::vector<std::string>::iterator it = functionFiles.begin(); it != functionFiles.end(); ++it) {
-        std::ifstream in((*it).c_str());
+    for (auto& file: functionFiles) {
+        std::ifstream in(file.c_str());
         functionDefinitions.push_back(std::string((std::istreambuf_iterator<char>(in)),
                                              (std::istreambuf_iterator<char>())));
     }
 }
 
 void impalajit::Compiler::compile(){
-    for(std::vector<std::string>::iterator it = functionDefinitions.begin(); it != functionDefinitions.end(); ++it) {
-        std::map<std::string,dasm_gen_func> parsedFunctions = driver.parse_string((*it));
+    for(auto& definition: functionDefinitions) {
+        auto parsedFunctions = driver.parse_string(definition);
         functionMap.insert(parsedFunctions.begin(), parsedFunctions.end());
         parameterCountMap.insert(std::make_pair(parsedFunctions.begin()->first, driver.getParameterCount()));
         driver.deleteFunctionContext();
@@ -97,7 +97,7 @@ unsigned int impalajit::Compiler::getParameterCount(std::string functionName) {
     return parameterCountMap.at(functionName);
 }
 
-void impalajit::Compiler::close(){
+void impalajit::Compiler::close() {
     driver.~Driver();
 }
 

@@ -39,6 +39,13 @@ public:
     virtual ~ExternalFunctionNode()
     {
     }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "ExternalFunctionNode" << std::endl;
+    }
 };
 
 class ExternalFunctionParametersNode : public Node
@@ -51,6 +58,13 @@ public:
 
     virtual ~ExternalFunctionParametersNode()
     {
+    }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "ExternalFunctionParametersNode" << std::endl;
     }
 };
 

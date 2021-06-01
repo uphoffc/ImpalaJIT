@@ -29,6 +29,13 @@ public:
     : Node(BOOLEAN_AND_JUNCTION)
     {
     }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "BooleanAndNode" << std::endl;
+    }
 };
 
 
@@ -38,6 +45,13 @@ public:
     BooleanOrNode()
             : Node(BOOLEAN_OR_JUNCTION)
     {
+    }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "BooleanOrNode" << std::endl;
     }
 };
 

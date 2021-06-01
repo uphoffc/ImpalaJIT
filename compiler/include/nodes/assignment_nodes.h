@@ -40,5 +40,12 @@ public:
         node->evaluate();
         assembly.storeLocalVariable();
     }*/
+
+    virtual void codegen() {
+    for (auto node: nodes) {
+      node->codegen();
+    }
+      std::cout << "am root" << std::endl;
+    }
 };
 #endif //IMPALAJIT_ASSIGNMENT_EXPRESSION_HH

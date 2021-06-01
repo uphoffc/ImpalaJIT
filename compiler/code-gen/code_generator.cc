@@ -17,6 +17,7 @@
  * THE SOFTWARE.
  */
 
+#include "engine/engine.h"
 #include <code_generator.hh>
 #include <expression_nodes.h>
 #include <assignment_nodes.h>
@@ -54,6 +55,18 @@ CodeGenerator::~CodeGenerator()
 dasm_gen_func CodeGenerator::generateCode(FunctionContext* &functionContext)
 {
     FunctionPtrMap::initialize_map();
+    std::cout << "function name: " << functionContext->name << std::endl;
+    auto &jit = Jit::getJit();
+    auto &dl = jit.getDataLayout();
+    {
+      auto lock = jit.getLock();
+      auto &context = jit.getContext();
+      std::cout << "getIndexTypeSicd zeInBits: " << dl.getIndexTypeSizeInBits(llvm::Type::getVoidTy(context)) << std::endl;
+    }
+
+
+    functionContext->root->codegen();
+
     assembly.initialize(functionContext->parameters.size());
     assembly.prologue();
 

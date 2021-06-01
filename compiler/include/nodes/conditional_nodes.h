@@ -31,6 +31,13 @@ public:
         nodes.push_back(_condition);
         nodes.push_back(_if_body);
     }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "IfStmtNode" << std::endl;
+    }
 };
 
 class IfElseStmtNode : public Node
@@ -43,6 +50,13 @@ public:
         nodes.push_back(_condition);
         nodes.push_back(_if_body);
         nodes.push_back(_else_body);
+    }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "IfElseStmtNode" << std::endl;
     }
 };
 
@@ -57,6 +71,13 @@ public:
     virtual ~IfBodyNode()
     {
     }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "IfBodyNode" << std::endl;
+    }
 };
 
 class ElseBodyNode : public Node
@@ -69,6 +90,13 @@ public:
 
     virtual ~ElseBodyNode()
     {
+    }
+
+    void codegen() override {
+      for (auto node: nodes) {
+        node->codegen();
+      }
+      std::cout << "ElseBodyNode" << std::endl;
     }
 };
 #endif //IMPALAJIT_COMPLEX_EXPRESSION_H
