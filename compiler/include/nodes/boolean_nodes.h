@@ -31,11 +31,12 @@ public:
     }
 
     llvm::Value* codegen(impala::Toolbox& tools) override {
-      for (auto node: nodes) {
-        node->codegen(tools);
-      }
+      assert(nodes.size() == 2 && "BooleanAndNode must be a binary op");
+      auto lhs = nodes[0]->codegen(tools);
+      auto rhs = nodes[1]->codegen(tools);
+
       std::cout << "BooleanAndNode" << std::endl;
-      return nullptr;
+      return tools.builder.CreateAnd(lhs, rhs);
     }
 };
 
@@ -49,11 +50,12 @@ public:
     }
 
     llvm::Value* codegen(impala::Toolbox& tools) override {
-      for (auto node: nodes) {
-        node->codegen(tools);
-      }
+      assert(nodes.size() == 2 && "BooleanOrNode must be a binary op");
+      auto lhs = nodes[0]->codegen(tools);
+      auto rhs = nodes[1]->codegen(tools);
+
       std::cout << "BooleanOrNode" << std::endl;
-      return nullptr;
+      return tools.builder.CreateOr(lhs, rhs);
     }
 };
 

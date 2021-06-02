@@ -69,19 +69,20 @@ dasm_gen_func CodeGenerator::generateCode(FunctionContext* &functionContext)
 
 
 void CodeGenerator::generateLLVMCode(FunctionContext* &functionContext, llvm::Module& module) {
-  auto &jit = Jit::getJit();
+  auto &jit = impala::engine::Jit::getJit();
   {
     auto lock = jit.getLock();
 
-    auto& context = jit.getContext();
+    llvm::LLVMContext& context = jit.getContext();
     auto builder = std::make_unique<llvm::IRBuilder<>>(context);
-    impala::Toolbox tools(context, *builder);
+    auto& externalFunctions = jit.getExternalMathFunctions();
+    impala::Toolbox tools(context, *builder, externalFunctions);
 
     auto function = this->genFunctionProto(functionContext, module, tools);
     functionContext->root->codegen(tools);
 
     llvm::verifyFunction(*function, &llvm::outs());
-    Jit::printIRFunction(function);
+    impala::engine::Jit::printIRModule(module);
 
     // TODO: delete this one (memory de-allocation bug)
     generateCode(functionContext);
@@ -105,14 +106,19 @@ llvm::Function* CodeGenerator::genFunctionProto(FunctionContext* &functionContex
                                          functionContext->name,
                                          currModule);
 
+  llvm::BasicBlock *entryBlock = llvm::BasicBlock::Create(tools.context, "entry", function);
+  tools.builder.SetInsertPoint(entryBlock);
+
   const auto& params = functionContext->parameters;
+  auto realType = llvm::Type::getDoubleTy(tools.context);
   for (size_t i = 0; i < params.size(); ++i) {
     llvm::Argument* arg = function->getArg(i);
     arg->setName(params[i]);
-    tools.table[params[i]] = arg;
+
+    auto argPtr = tools.builder.CreateAlloca(realType);
+    tools.table[params[i]] = argPtr;
+    tools.builder.CreateStore(arg, argPtr);
   }
-  llvm::BasicBlock *entryBlock = llvm::BasicBlock::Create(tools.context, "entry", function);
-  tools.builder.SetInsertPoint(entryBlock);
 
   return function;
 }

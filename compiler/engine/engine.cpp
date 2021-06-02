@@ -1,10 +1,11 @@
 #include "engine.h"
-#include "llvm/IR/PassManager.h"
 #include "llvm/IR/IRPrintingPasses.h"
+#include "llvm/IR/PassManager.h"
 #include <memory>
 
-
-Jit& Jit::getJit() {
+namespace impala {
+namespace engine {
+Jit &Jit::getJit() {
   static Jit jit;
   return jit;
 }
@@ -47,22 +48,28 @@ Jit::Jit() {
 
     // create llvm context
     context = std::make_unique<llvm::orc::ThreadSafeContext>(std::make_unique<llvm::LLVMContext>());
-  }
-  catch (const std::exception& err) {
+
+    this->createMathModule();
+  } catch (const std::exception &err) {
     llvm::errs() << err.what() << '\n';
     throw err;
   }
 }
 
+void Jit::createMathModule() {
+  mathModule = this->createModule();
+  llvm::Type *realType = llvm::Type::getDoubleTy(*(context->getContext()));
+  externalMathFunctions = StdMathLib::fillModule(mathModule, realType);
+  //this->addModule(mathModule);
+}
 
-void Jit::addModule(std::unique_ptr<llvm::Module>& module) {
+void Jit::addModule(std::unique_ptr<llvm::Module> &module) {
   llvm::cantFail(compileLayer->add(*jitDylib, llvm::orc::ThreadSafeModule(std::move(module), *context)));
 }
 
-
 llvm::JITEvaluatedSymbol Jit::lookup(llvm::StringRef Name) {
   // lookup will implicitly trigger compilation for any symbol that has not already been compiled
-  auto& m = *mangle;
+  auto &m = *mangle;
   llvm::Expected<llvm::JITEvaluatedSymbol> expected = ES.lookup({jitDylib}, (*mangle)(Name.str()));
   if (!expected) {
     llvm::errs() << expected.takeError() << '\n';
@@ -75,18 +82,23 @@ std::unique_ptr<llvm::Module> Jit::createModule() {
   static long long counter{0};
   std::string moduleName{"impala_module_" + std::to_string(counter)};
   ++counter;
-  return std::make_unique<llvm::Module>(std::move(moduleName), *context->getContext());
+
+  auto module = std::make_unique<llvm::Module>(std::move(moduleName), *context->getContext());
+  llvm::Type *realType = llvm::Type::getDoubleTy(*(context->getContext()));
+  externalMathFunctions = StdMathLib::fillModule(module, realType);
+  return module;
 }
 
-void Jit::printIRFunction(llvm::Function* function) {
+void Jit::printIRFunction(llvm::Function *function) {
   llvm::raw_fd_ostream stream(fileno(stdout), false);
-  llvm::FunctionPass* printPass = llvm::createPrintFunctionPass(llvm::outs());
+  llvm::FunctionPass *printPass = llvm::createPrintFunctionPass(llvm::outs());
   printPass->runOnFunction(*function);
 }
 
-
-void Jit::printIRModule(llvm::Module& module) {
+void Jit::printIRModule(llvm::Module &module) {
   llvm::raw_fd_ostream stream(fileno(stdout), false);
-  llvm::ModulePass* printPass = llvm::createPrintModulePass(llvm::outs());
+  llvm::ModulePass *printPass = llvm::createPrintModulePass(llvm::outs());
   printPass->runOnModule(module);
 }
+} // namespace engine
+} // namespace impala

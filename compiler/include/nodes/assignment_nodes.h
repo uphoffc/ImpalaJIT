@@ -38,10 +38,19 @@ public:
 
 
     llvm::Value* codegen(impala::Toolbox& tools) override {
-      for (auto node: nodes) {
-        node->codegen(tools);
+      assert(nodes.size() == 1 && "AssignmentNode must have one child expr");
+      auto expr = nodes[0]->codegen(tools);
+
+      if (tools.table.find(name) != tools.table.end()) {
+        auto lhs = tools.table[name];
+        tools.builder.CreateStore(expr, lhs);
       }
-      std::cout << "am root" << std::endl;
+      else {
+        // TODO: add support for scopes
+        auto varDef = tools.builder.CreateAlloca(llvm::Type::getDoubleTy(tools.context));
+        tools.builder.CreateStore(expr, varDef);
+        tools.table[name] = varDef;
+      }
       return nullptr;
     }
 };

@@ -20,7 +20,9 @@
 #ifndef IMPALAJIT_EXTERNAL_FUNCTION_NODE_H
 #define IMPALAJIT_EXTERNAL_FUNCTION_NODE_H
 
-#include <node.h>
+#include "node.h"
+#include "std_math_lib.h"
+#include <sstream>
 #include <iostream>
 
 class ExternalFunctionNode: public Node
@@ -41,11 +43,35 @@ public:
     }
 
     llvm::Value* codegen(impala::Toolbox& tools) override {
-      for (auto node: nodes) {
-        node->codegen(tools);
+      std::stringstream errStream;
+      if (tools.externalMathFunctions.find(name) == tools.externalMathFunctions.end()) {
+        errStream << "impala: function `" << name << "` doesn't belong to the standard math library";
+        throw std::runtime_error(errStream.str());
       }
+
+      auto proto = tools.externalMathFunctions[name];
+      if (nodes.size() != proto->arg_size()) {
+        errStream << "impala: function `" << name
+                   << "` takes " << proto->arg_size() << " parameters, "
+                   << "given " << nodes.size();
+        throw std::runtime_error(errStream.str());
+      }
+
+      std::vector<llvm::Value* > args;
+      for (auto node: nodes) {
+        auto arg = node->codegen(tools);
+        if (arg) {
+          args.push_back(arg);
+        }
+        else {
+          errStream << "impala: found a statement in a list of formal parameters. "
+                 << "Please, check `" << name << "` function call";
+          throw std::runtime_error(errStream.str());
+        }
+      }
+
       std::cout << "ExternalFunctionNode" << std::endl;
-      return nullptr;
+      return tools.builder.CreateCall(proto, args);
     }
 };
 
@@ -62,10 +88,8 @@ public:
     }
 
     llvm::Value* codegen(impala::Toolbox& tools) override {
-      for (auto node: nodes) {
-        node->codegen(tools);
-      }
       std::cout << "ExternalFunctionParametersNode" << std::endl;
+      throw std::runtime_error("impala: never been suported by the language");
       return nullptr;
     }
 };

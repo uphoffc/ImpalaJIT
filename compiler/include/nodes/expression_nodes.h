@@ -32,11 +32,10 @@ public:
     }
 
     llvm::Value* codegen(impala::Toolbox& tools) override {
-      for (auto node: nodes) {
-        node->codegen(tools);
-      }
+      assert(nodes.empty() && "ConstantNode must be a leaf node");
       std::cout << "ConstantNode" << std::endl;
-      return nullptr;
+      auto realType = llvm::Type::getDoubleTy(tools.context);
+      return llvm::ConstantFP::get(realType, value);
     }
 };
 
@@ -51,7 +50,10 @@ public:
     llvm::Value* codegen(impala::Toolbox& tools) override {
       assert(nodes.size() == 0 && "VariableNode must have no children");
       std::cout << "VariableNode" << std::endl;
-      return tools.table.find(name) != tools.table.end() ? tools.table[name] : nullptr;
+      if (tools.table.find(name) == tools.table.end()) {
+        std::runtime_error("symbol `" + name + "` have not been found");
+      }
+      return tools.builder.CreateLoad(tools.table[name]);
     }
 };
 
@@ -65,11 +67,10 @@ public:
     }
 
     llvm::Value* codegen(impala::Toolbox& tools) override {
-      for (auto node: nodes) {
-        node->codegen(tools);
-      }
+      assert(nodes.size() == 1 && "NegationNode must be a unary operation");
+      auto expr = nodes[0]->codegen(tools);
       std::cout << "NegationNode" << std::endl;
-      return nullptr;
+      return tools.builder.CreateFNeg(expr);
     }
 };
 
@@ -84,11 +85,12 @@ public:
     }
 
     llvm::Value* codegen(impala::Toolbox& tools) override {
-      for (auto node: nodes) {
-        node->codegen(tools);
-      }
+      assert(nodes.size() == 2 && "AdditionNode must be a binary op");
+      auto lhs = nodes[0]->codegen(tools);
+      auto rhs = nodes[1]->codegen(tools);
+
       std::cout << "AdditionNode" << std::endl;
-      return nullptr;
+      return tools.builder.CreateFAdd(lhs, rhs);
     }
 };
 
@@ -103,11 +105,12 @@ public:
     }
 
     llvm::Value* codegen(impala::Toolbox& tools) override {
-      for (auto node: nodes) {
-        node->codegen(tools);
-      }
+      assert(nodes.size() == 2 && "SubtractionNode must be a binary op");
+      auto lhs = nodes[0]->codegen(tools);
+      auto rhs = nodes[1]->codegen(tools);
+
       std::cout << "SubtractionNode" << std::endl;
-      return nullptr;
+      return tools.builder.CreateFSub(lhs, rhs);
     }
 };
 
@@ -142,11 +145,12 @@ public:
     }
 
     llvm::Value* codegen(impala::Toolbox& tools) override {
-      for (auto node: nodes) {
-        node->codegen(tools);
-      }
+      assert(nodes.size() == 2 && "DivisionNode must be a binary op");
+      auto lhs = nodes[0]->codegen(tools);
+      auto rhs = nodes[1]->codegen(tools);
+
       std::cout << "DivisionNode" << std::endl;
-      return nullptr;
+      return tools.builder.CreateFDiv(lhs, rhs);
     }
 };
 
@@ -161,9 +165,10 @@ public:
     }
 
     llvm::Value* codegen(impala::Toolbox& tools) override {
-      for (auto node: nodes) {
-        node->codegen(tools);
-      }
+      assert(nodes.size() == 2 && "DivisionNode must be a binary op");
+      auto lhs = nodes[0]->codegen(tools);
+      auto rhs = nodes[1]->codegen(tools);
+
       std::cout << "PowerNode" << std::endl;
       return nullptr;
     }

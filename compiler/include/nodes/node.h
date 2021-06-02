@@ -52,8 +52,8 @@ public:
     }
 
     llvm::Value* codegen(impala::Toolbox& tools) override {
-      for (auto node: nodes) {
-        node->codegen(tools);
+      for (auto statements: nodes) {
+        statements->codegen(tools);
       }
       std::cout << "Im root" << std::endl;
       return nullptr;
