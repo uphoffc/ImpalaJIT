@@ -182,9 +182,9 @@ public:
     virtual dasm_gen_func linkAndEncode()= 0;
 
 protected:
-    dasm_State* d;
-    dasm_State** Dst;
-    void** labels;
+    dasm_State* d{nullptr};
+    dasm_State** Dst{nullptr};
+    void** labels{nullptr};
     int stackPos;   // The head of the rpn stack
     std::stack<int> stackPosStack;
 };

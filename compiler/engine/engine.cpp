@@ -71,19 +71,11 @@ llvm::JITEvaluatedSymbol Jit::lookup(llvm::StringRef Name) {
   return *expected;
 }
 
-void Jit::reserveModule() {
+std::unique_ptr<llvm::Module> Jit::createModule() {
   static long long counter{0};
   std::string moduleName{"impala_module_" + std::to_string(counter)};
-  module = (std::make_unique<llvm::Module>(std::move(moduleName), *context->getContext()));
   ++counter;
-}
-
-void Jit::registerModule() {
-  this->addModule(module);
-}
-
-std::unique_ptr<llvm::Module>& Jit::getCurrentModule() {
-  return module;
+  return std::make_unique<llvm::Module>(std::move(moduleName), *context->getContext());
 }
 
 void Jit::printIRFunction(llvm::Function* function) {

@@ -56,23 +56,6 @@ CodeGenerator::~CodeGenerator()
 dasm_gen_func CodeGenerator::generateCode(FunctionContext* &functionContext)
 {
     FunctionPtrMap::initialize_map();
-    auto &jit = Jit::getJit();
-    {
-      auto lock = jit.getLock();
-
-      auto& context = jit.getContext();
-      auto builder = std::make_unique<llvm::IRBuilder<>>(context);
-
-      impala::Toolbox tools(context, *builder);
-      auto function = this->genFunctionProto(functionContext, *jit.getCurrentModule(), tools);
-      functionContext->root->codegen(tools);
-
-      llvm::verifyFunction(*function, &llvm::outs());
-      Jit::printIRFunction(function);
-    }
-    jit.registerModule();
-    auto generatedFunction = reinterpret_cast<dasm_gen_func>(jit.lookup(functionContext->name).getAddress());
-    std::cout << "hello: " << generatedFunction(2.0, 20.0) << std::endl;
 
     assembly.initialize(functionContext->parameters.size());
     assembly.prologue();
@@ -85,9 +68,30 @@ dasm_gen_func CodeGenerator::generateCode(FunctionContext* &functionContext)
 }
 
 
+void CodeGenerator::generateLLVMCode(FunctionContext* &functionContext, llvm::Module& module) {
+  auto &jit = Jit::getJit();
+  {
+    auto lock = jit.getLock();
+
+    auto& context = jit.getContext();
+    auto builder = std::make_unique<llvm::IRBuilder<>>(context);
+    impala::Toolbox tools(context, *builder);
+
+    auto function = this->genFunctionProto(functionContext, module, tools);
+    functionContext->root->codegen(tools);
+
+    llvm::verifyFunction(*function, &llvm::outs());
+    Jit::printIRFunction(function);
+
+    // TODO: delete this one (memory de-allocation bug)
+    generateCode(functionContext);
+  }
+}
+
+
 llvm::Function* CodeGenerator::genFunctionProto(FunctionContext* &functionContext,
-                                     llvm::Module& currModule,
-                                     impala::Toolbox &tools) {
+                                                llvm::Module& currModule,
+                                                impala::Toolbox &tools) {
 
   const auto numParams = functionContext->parameters.size();
   auto typeReal = llvm::Type::getDoubleTy(tools.context);

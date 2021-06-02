@@ -27,6 +27,8 @@
 class FunctionContext {
 
 public:
+    using FunctionSinatureT = std::pair<std::string, unsigned>;
+
     std::vector<std::string> parameters;
     std::vector<std::string> variables;
     Node* root;

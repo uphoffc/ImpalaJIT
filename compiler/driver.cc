@@ -63,6 +63,30 @@ std::map<std::string,dasm_gen_func> Driver::parse_string(const std::string &inpu
     return parse_stream(iss);
 }
 
+FunctionContext::FunctionSinatureT Driver::generateLLVMFunction(std::istream& in, llvm::Module& module) {
+  Scanner scanner(&in);
+  scanner.set_debug(false);
+  this->lexer = &scanner;
+
+  Parser parser(*this);
+  parser.set_debug_level(false);
+  parser.parse();
+
+  SemanticAnalyzer semanticAnalyzer;
+  semanticAnalyzer.performSemanticAnalysis(functionContext);
+
+  CodeGenerator codeGenerator;
+  codeGenerator.generateLLVMCode(functionContext, module);
+  return std::make_pair(functionContext->name, functionContext->parameters.size());
+}
+
+FunctionContext::FunctionSinatureT Driver::generateLLVMFunction(const std::string &input,
+                                                                llvm::Module& module) {
+  std::istringstream iss(input);
+  auto signature = generateLLVMFunction(iss, module);
+  return signature;
+}
+
 void Driver::deleteFunctionContext(){
     delete functionContext;
     functionContext = nullptr;

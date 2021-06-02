@@ -114,5 +114,7 @@ public:
      * @return the function pointer
      */
     dasm_gen_func generateCode(FunctionContext* &functionContext);
+
+    void generateLLVMCode(FunctionContext* &functionContext, llvm::Module& module);
 };
 #endif //IMPALAJIT_CODE_GENERATOR_HH

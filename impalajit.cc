@@ -75,15 +75,30 @@ void impalajit::Compiler::loadFunctionDefinitionsFromInputFiles(std::string _con
     }
 }
 
+void impalajit::Compiler::compileWithLLVM() {
+  auto& jit = Jit::getJit();
+  auto currentModule = jit.createModule();
+  std::vector<FunctionContext::FunctionSinatureT> functionSignature;
+  for(auto& definition: functionDefinitions) {
+    functionSignature.emplace_back(driver.generateLLVMFunction(definition, *currentModule));
+    driver.deleteFunctionContext();
+  }
+  jit.addModule(currentModule);
+
+  for (auto& signature: functionSignature) {
+    auto function = reinterpret_cast<dasm_gen_func>(jit.lookup(signature.first).getAddress());
+    functionMap[signature.first] = function;
+    parameterCountMap[signature.first] = signature.second;
+  }
+}
+
 void impalajit::Compiler::compile(){
-    Jit::getJit().reserveModule();
     for(auto& definition: functionDefinitions) {
         auto parsedFunctions = driver.parse_string(definition);
         functionMap.insert(parsedFunctions.begin(), parsedFunctions.end());
         parameterCountMap.insert(std::make_pair(parsedFunctions.begin()->first, driver.getParameterCount()));
         driver.deleteFunctionContext();
     }
-    // TODO: register a module
 }
 
 dasm_gen_func impalajit::Compiler::getFunction(std::string functionName) {

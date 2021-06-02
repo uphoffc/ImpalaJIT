@@ -48,6 +48,7 @@ public:
     Compiler();
 
     void compile();
+    void compileWithLLVM();
     dasm_gen_func getFunction(std::string functionName);
     unsigned int getParameterCount(std::string functionName);
 

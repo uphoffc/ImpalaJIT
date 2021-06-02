@@ -52,10 +52,7 @@ public:
   // looks up addresses for function and variable definitions added to the JIT based on their symbol names.
   llvm::JITEvaluatedSymbol lookup(llvm::StringRef Name);
 
-  void reserveModule();
-  std::unique_ptr<llvm::Module>& getCurrentModule();
-  void registerModule();
-
+  std::unique_ptr<llvm::Module> createModule();
   static void printIRFunction(llvm::Function* function);
   static void printIRModule(llvm::Module& module);
 
@@ -69,7 +66,6 @@ private:
   std::unique_ptr<llvm::DataLayout> dataLayout{nullptr};
   std::unique_ptr<llvm::orc::MangleAndInterner> mangle{nullptr};
   std::unique_ptr<llvm::orc::ThreadSafeContext> context{nullptr};
-  std::unique_ptr<llvm::Module> module;
 };
 
 #endif //IMPALA_CPP_ENGINE_H

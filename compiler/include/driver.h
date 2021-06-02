@@ -46,6 +46,10 @@ public:
 
     std::map<std::string,dasm_gen_func> parse_string(const std::string& input);
 
+    FunctionContext::FunctionSinatureT generateLLVMFunction(std::istream& in, llvm::Module& module);
+
+    FunctionContext::FunctionSinatureT generateLLVMFunction(const std::string& input, llvm::Module& module);
+
     void setFunctionContext(FunctionContext* _functionContext);
 
     void deleteFunctionContext();
