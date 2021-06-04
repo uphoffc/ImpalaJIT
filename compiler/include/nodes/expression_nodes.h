@@ -22,158 +22,132 @@
 
 #include <node.h>
 
-class ConstantNode : public Node
-{
+class ConstantNode : public Node {
 public:
-    double value;
-    explicit ConstantNode(double _value)
-            : Node(CONSTANT), value(_value)
-    {
-    }
+  double value;
+  explicit ConstantNode(double _value) : Node(CONSTANT), value(_value) {}
 
-    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
-      assert(nodes.empty() && "ConstantNode must be a leaf node");
-      std::cout << "ConstantNode" << std::endl;
-      auto realType = llvm::Type::getDoubleTy(tools.context);
-      return llvm::ConstantFP::get(realType, value);
-    }
+  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
+    assert(nodes.empty() && "ConstantNode must be a leaf node");
+    std::cout << "ConstantNode" << std::endl;
+    auto realType = llvm::Type::getDoubleTy(tools.context);
+    return llvm::ConstantFP::get(realType, value);
+  }
 };
 
 class VariableNode : public Node {
 
 public:
-    std::string &name;
-    VariableNode(std::string &_name)
-            : Node(VARIABLE), name(_name) {
-    }
+  std::string &name;
+  VariableNode(std::string &_name) : Node(VARIABLE), name(_name) {}
 
-    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
-      assert(nodes.empty() && "VariableNode must have no children");
-      auto address = tools.symbolTable[name];
-      if (!address) {
-        throw std::runtime_error("symbol `" + name + "` have not been defined");
-      }
-      std::cout << "VariableNode" << std::endl;
-      return tools.builder->CreateLoad(address);
+  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
+    assert(nodes.empty() && "VariableNode must have no children");
+    auto address = tools.symbolTable[name];
+    if (!address) {
+      throw std::runtime_error("symbol `" + name + "` have not been defined");
     }
+    std::cout << "VariableNode" << std::endl;
+    return tools.builder->CreateLoad(address);
+  }
 };
 
-class NegationNode : public Node
-{
+class NegationNode : public Node {
 public:
-    NegationNode(Node* _node)
-            : Node(NEGATION)
-    {
-        nodes.push_back(_node);
-    }
+  NegationNode(Node *_node) : Node(NEGATION) { nodes.push_back(_node); }
 
-    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
-      assert(nodes.size() == 1 && "NegationNode must be a unary operation");
-      auto expr = nodes[0]->codegen(tools);
-      std::cout << "NegationNode" << std::endl;
-      return tools.builder->CreateFNeg(expr);
-    }
+  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
+    assert(nodes.size() == 1 && "NegationNode must be a unary operation");
+    auto expr = nodes[0]->codegen(tools);
+    std::cout << "NegationNode" << std::endl;
+    return tools.builder->CreateFNeg(expr);
+  }
 };
 
-class AdditionNode : public Node
-{
+class AdditionNode : public Node {
 public:
-    AdditionNode(Node* _left, Node* _right)
-            : Node(ADDITION)
-    {
-        nodes.push_back(_left);
-        nodes.push_back(_right);
-    }
+  AdditionNode(Node *_left, Node *_right) : Node(ADDITION) {
+    nodes.push_back(_left);
+    nodes.push_back(_right);
+  }
 
-    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
-      assert(nodes.size() == 2 && "AdditionNode must be a binary op");
-      auto lhs = nodes[0]->codegen(tools);
-      auto rhs = nodes[1]->codegen(tools);
+  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
+    assert(nodes.size() == 2 && "AdditionNode must be a binary op");
+    auto lhs = nodes[0]->codegen(tools);
+    auto rhs = nodes[1]->codegen(tools);
 
-      std::cout << "AdditionNode" << std::endl;
-      return tools.builder->CreateFAdd(lhs, rhs);
-    }
+    std::cout << "AdditionNode" << std::endl;
+    return tools.builder->CreateFAdd(lhs, rhs);
+  }
 };
 
-class SubtractionNode : public Node
-{
+class SubtractionNode : public Node {
 public:
-    SubtractionNode(Node* _left, Node* _right)
-            : Node(SUBTRACTION)
-    {
-        nodes.push_back(_left);
-        nodes.push_back(_right);
-    }
+  SubtractionNode(Node *_left, Node *_right) : Node(SUBTRACTION) {
+    nodes.push_back(_left);
+    nodes.push_back(_right);
+  }
 
-    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
-      assert(nodes.size() == 2 && "SubtractionNode must be a binary op");
-      auto lhs = nodes[0]->codegen(tools);
-      auto rhs = nodes[1]->codegen(tools);
+  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
+    assert(nodes.size() == 2 && "SubtractionNode must be a binary op");
+    auto lhs = nodes[0]->codegen(tools);
+    auto rhs = nodes[1]->codegen(tools);
 
-      std::cout << "SubtractionNode" << std::endl;
-      return tools.builder->CreateFSub(lhs, rhs);
-    }
+    std::cout << "SubtractionNode" << std::endl;
+    return tools.builder->CreateFSub(lhs, rhs);
+  }
 };
 
-class MultiplicationNode : public Node
-{
+class MultiplicationNode : public Node {
 public:
-    MultiplicationNode(Node* _left, Node* _right)
-            : Node(MULTIPLICATION)
-    {
-        nodes.push_back(_left);
-        nodes.push_back(_right);
-    }
+  MultiplicationNode(Node *_left, Node *_right) : Node(MULTIPLICATION) {
+    nodes.push_back(_left);
+    nodes.push_back(_right);
+  }
 
-    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
-      assert(nodes.size() == 2 && "MultiplicationNode must be a binary op");
-      auto lhs = nodes[0]->codegen(tools);
-      auto rhs = nodes[1]->codegen(tools);
+  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
+    assert(nodes.size() == 2 && "MultiplicationNode must be a binary op");
+    auto lhs = nodes[0]->codegen(tools);
+    auto rhs = nodes[1]->codegen(tools);
 
-      std::cout << "MultiplicationNode" << std::endl;
-      return tools.builder->CreateFMul(lhs, rhs);
-    }
+    std::cout << "MultiplicationNode" << std::endl;
+    return tools.builder->CreateFMul(lhs, rhs);
+  }
 };
 
-class DivisionNode : public Node
-{
+class DivisionNode : public Node {
 public:
-    DivisionNode(Node* &_left, Node* &_right)
-            : Node(DIVISION)
-    {
-        nodes.push_back(_left);
-        nodes.push_back(_right);
-    }
+  DivisionNode(Node *&_left, Node *&_right) : Node(DIVISION) {
+    nodes.push_back(_left);
+    nodes.push_back(_right);
+  }
 
-    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
-      assert(nodes.size() == 2 && "DivisionNode must be a binary op");
-      auto lhs = nodes[0]->codegen(tools);
-      auto rhs = nodes[1]->codegen(tools);
+  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
+    assert(nodes.size() == 2 && "DivisionNode must be a binary op");
+    auto lhs = nodes[0]->codegen(tools);
+    auto rhs = nodes[1]->codegen(tools);
 
-      std::cout << "DivisionNode" << std::endl;
-      return tools.builder->CreateFDiv(lhs, rhs);
-    }
+    std::cout << "DivisionNode" << std::endl;
+    return tools.builder->CreateFDiv(lhs, rhs);
+  }
 };
 
-class PowerNode : public Node
-{
+class PowerNode : public Node {
 public:
-    PowerNode(Node* _base, Node* _exponent)
-            : Node(POWER)
-    {
-        nodes.push_back(_exponent);
-        nodes.push_back(_base);
-    }
+  PowerNode(Node *_base, Node *_exponent) : Node(POWER) {
+    nodes.push_back(_exponent);
+    nodes.push_back(_base);
+  }
 
-    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
-      assert(nodes.size() == 2 && "DivisionNode must be a binary op");
-      auto lhs = nodes[0]->codegen(tools);
-      auto rhs = nodes[1]->codegen(tools);
+  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
+    assert(nodes.size() == 2 && "DivisionNode must be a binary op");
+    auto lhs = nodes[0]->codegen(tools);
+    auto rhs = nodes[1]->codegen(tools);
 
-      std::cout << "PowerNode" << std::endl;
-      // TODO: return result
-      return nullptr;
-    }
+    std::cout << "PowerNode" << std::endl;
+    // TODO: return result
+    return nullptr;
+  }
 };
 
-#endif //IMPALAJIT_BASIC_EXPRESSION_H_HH
+#endif // IMPALAJIT_BASIC_EXPRESSION_H_HH

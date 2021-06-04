@@ -27,14 +27,12 @@
  */
 class CalculationHelper {
 public:
-    /**
-     * Trivial...
-     *
-     * @param value value
-     * @return -value
-     */
-    static double changeSign(double value) {
-        return -value;
-    }
+  /**
+   * Trivial...
+   *
+   * @param value value
+   * @return -value
+   */
+  static double changeSign(double value) { return -value; }
 };
-#endif //IMPALAJIT_CALCULATION_HELPER_HH
+#endif // IMPALAJIT_CALCULATION_HELPER_HH

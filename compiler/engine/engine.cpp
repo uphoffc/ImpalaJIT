@@ -46,8 +46,8 @@ Jit::Jit() {
     const std::string dylibName{"jit_dylib"};
     ES.createJITDylib(dylibName);
     jitDylib = ES.getJITDylibByName(dylibName);
-    jitDylib->addGenerator(llvm::cantFail(llvm::orc::DynamicLibrarySearchGenerator::GetForCurrentProcess(
-        dataLayout->getGlobalPrefix())));
+    jitDylib->addGenerator(
+        llvm::cantFail(llvm::orc::DynamicLibrarySearchGenerator::GetForCurrentProcess(dataLayout->getGlobalPrefix())));
 
     // create llvm context
     context = std::make_unique<llvm::orc::ThreadSafeContext>(std::make_unique<llvm::LLVMContext>());
@@ -85,9 +85,7 @@ std::unique_ptr<llvm::Module> Jit::createModule() {
   return module;
 }
 
-Jit::Toolbox Jit::createToolbox() {
-  return Jit::Toolbox(*(context->getContext()), externalMathFunctions);
-}
+Jit::Toolbox Jit::createToolbox() { return Jit::Toolbox(*(context->getContext()), externalMathFunctions); }
 
 void Jit::printIRFunction(llvm::Function *function) {
   llvm::raw_fd_ostream stream(fileno(stdout), false);

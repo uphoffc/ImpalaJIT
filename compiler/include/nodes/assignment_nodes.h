@@ -22,34 +22,26 @@
 
 #include <node.h>
 
-class AssignmentNode : public Node
-{
+class AssignmentNode : public Node {
 public:
-    std::string &name;
-    AssignmentNode(std::string &_name, Node* _node)
-            : name(_name), Node(ASSIGNMENT)
-    {
-        nodes.push_back(_node);
+  std::string &name;
+  AssignmentNode(std::string &_name, Node *_node) : name(_name), Node(ASSIGNMENT) { nodes.push_back(_node); }
+
+  virtual ~AssignmentNode() {}
+
+  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
+    assert(nodes.size() == 1 && "AssignmentNode must have one child expr");
+    auto expr = nodes[0]->codegen(tools);
+
+    auto address = tools.symbolTable[name];
+    if (!address) {
+      auto realType = llvm::Type::getDoubleTy(tools.context);
+      address = tools.builder->CreateAlloca(realType);
+      tools.symbolTable.addSymbol(name, address);
     }
-
-    virtual ~AssignmentNode()
-    {
-    }
-
-
-    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
-      assert(nodes.size() == 1 && "AssignmentNode must have one child expr");
-      auto expr = nodes[0]->codegen(tools);
-
-      auto address = tools.symbolTable[name];
-      if (!address) {
-        auto realType = llvm::Type::getDoubleTy(tools.context);
-        address = tools.builder->CreateAlloca(realType);
-        tools.symbolTable.addSymbol(name, address);
-      }
-      std::cout << "AssignmentNode" << std::endl;
-      tools.builder->CreateStore(expr, address);
-      return nullptr;
-    }
+    std::cout << "AssignmentNode" << std::endl;
+    tools.builder->CreateStore(expr, address);
+    return nullptr;
+  }
 };
-#endif //IMPALAJIT_ASSIGNMENT_EXPRESSION_HH
+#endif // IMPALAJIT_ASSIGNMENT_EXPRESSION_HH

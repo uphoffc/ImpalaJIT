@@ -20,45 +20,42 @@
 #ifndef IMPALAJIT_DRIVER_H
 #define IMPALAJIT_DRIVER_H
 
-
-
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
 
 #include <function_context.h>
 #include <types.hh>
 
-
 namespace impalajit {
 
-class Driver
-{
+class Driver {
 private:
-    FunctionContext* functionContext;
+  FunctionContext *functionContext;
+
 public:
-    Driver();
-    ~Driver();
+  Driver();
+  ~Driver();
 
-    class Scanner* lexer;
+  class Scanner *lexer;
 
-    std::map<std::string,dasm_gen_func> parse_stream(std::istream& in);
+  std::map<std::string, dasm_gen_func> parse_stream(std::istream &in);
 
-    std::map<std::string,dasm_gen_func> parse_string(const std::string& input);
+  std::map<std::string, dasm_gen_func> parse_string(const std::string &input);
 
-    FunctionContext::FunctionSinatureT generateLLVMFunction(std::istream& in, llvm::Module& module);
+  FunctionContext::FunctionSinatureT generateLLVMFunction(std::istream &in, llvm::Module &module);
 
-    FunctionContext::FunctionSinatureT generateLLVMFunction(const std::string& input, llvm::Module& module);
+  FunctionContext::FunctionSinatureT generateLLVMFunction(const std::string &input, llvm::Module &module);
 
-    void setFunctionContext(FunctionContext* _functionContext);
+  void setFunctionContext(FunctionContext *_functionContext);
 
-    void deleteFunctionContext();
+  void deleteFunctionContext();
 
-    unsigned int getParameterCount();
+  unsigned int getParameterCount();
 
-    void error(const class location& l, const std::string& m);
+  void error(const class location &l, const std::string &m);
 
-    void error(const std::string& m);
+  void error(const std::string &m);
 };
 
 } // namespace impalajit

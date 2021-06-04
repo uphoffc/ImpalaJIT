@@ -20,44 +20,33 @@
 #ifndef EXPRESSION_H
 #define EXPRESSION_H
 
-#include <internal_types.hh>
 #include "engine.h"
-#include <vector>
+#include <internal_types.hh>
 #include <iostream>
+#include <vector>
 
-class Node
-{
+class Node {
 public:
-    NodeType nodeType;
-    std::vector<Node*> nodes;
+  NodeType nodeType;
+  std::vector<Node *> nodes;
 
-    Node(NodeType _nodeType) :
-            nodeType(_nodeType)
-    {
-    }
-    virtual ~Node()
-    {
-        nodes.clear();
-    }
+  Node(NodeType _nodeType) : nodeType(_nodeType) {}
+  virtual ~Node() { nodes.clear(); }
 
-    virtual llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) = 0;
+  virtual llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) = 0;
 };
 
-class RootNode : public Node
-{
+class RootNode : public Node {
 public:
-    RootNode()
-            : Node(ROOT)
-    {
-    }
+  RootNode() : Node(ROOT) {}
 
-    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
-      for (auto statements: nodes) {
-        statements->codegen(tools);
-      }
-      std::cout << "Im root" << std::endl;
-      return nullptr;
+  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
+    for (auto statements : nodes) {
+      statements->codegen(tools);
     }
+    std::cout << "Im root" << std::endl;
+    return nullptr;
+  }
 };
 
 #endif // EXPRESSION_H

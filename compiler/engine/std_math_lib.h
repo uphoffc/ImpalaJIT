@@ -20,8 +20,8 @@ private:
   using SupportedFunctionSetT = std::unordered_set<types::FunctionSinatureT, impala::FunctionSignatureHash>;
   using FunctionAliasingMapT = std::unordered_map<std::string, std::string>;
 
-  static SupportedFunctionSetT& getSupportedFunctionSet();
-  static FunctionAliasingMapT& getFunctionAliasingMap();
+  static SupportedFunctionSetT &getSupportedFunctionSet();
+  static FunctionAliasingMapT &getFunctionAliasingMap();
 };
 } // namespace engine
 } // namespace impala

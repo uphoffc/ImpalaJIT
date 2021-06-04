@@ -87,7 +87,7 @@ public:
 
     tools.builder->SetInsertPoint(elseBlock);
     nodes[2]->codegen(tools);
-    auto& lastElseBlockInstr = tools.builder->GetInsertBlock()->back();
+    auto &lastElseBlockInstr = tools.builder->GetInsertBlock()->back();
     bool noReturnInElseBlock = !llvm::isa<llvm::ReturnInst>(lastElseBlockInstr);
     if (noReturnInElseBlock) {
       tools.builder->CreateBr(mergeBlock);
@@ -113,7 +113,7 @@ public:
     tools.symbolTable.addScope();
     for (auto node : nodes) {
       node->codegen(tools);
-      auto& lastInstruction = tools.builder->GetInsertBlock()->back();
+      auto &lastInstruction = tools.builder->GetInsertBlock()->back();
       if (llvm::isa<llvm::ResumeInst>(lastInstruction)) {
         // a return instruction found. Doesn't make sense to generate the rest of the instructions
         break;
