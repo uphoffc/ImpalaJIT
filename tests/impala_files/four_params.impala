@@ -1,0 +1,10 @@
+four_params(a, b, c, d) {
+    var1 = a + b;
+    if (c > d) {
+        var1 = var1 + 100;
+    }
+    else {
+        var1 = var1 + c / d;
+    }
+    return var1;
+}

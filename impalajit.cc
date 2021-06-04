@@ -75,7 +75,7 @@ void impalajit::Compiler::loadFunctionDefinitionsFromInputFiles(std::string _con
     }
 }
 
-void impalajit::Compiler::compileWithLLVM() {
+void impalajit::Compiler::compile() {
   auto& jit = impala::engine::Jit::getJit();
   auto currentModule = jit.createModule();
   std::vector<FunctionContext::FunctionSinatureT> functionSignature;
@@ -92,7 +92,7 @@ void impalajit::Compiler::compileWithLLVM() {
   }
 }
 
-void impalajit::Compiler::compile(){
+void impalajit::Compiler::compileLegacy(){
     for(auto& definition: functionDefinitions) {
         auto parsedFunctions = driver.parse_string(definition);
         functionMap.insert(parsedFunctions.begin(), parsedFunctions.end());

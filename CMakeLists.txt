@@ -111,10 +111,11 @@ target_include_directories( ${TARGET_NAME} PRIVATE ${LLVM_INCLUDE_DIRS} )
 target_compile_definitions( ${TARGET_NAME} PRIVATE ${LLVM_DEFINITIONS} )
 
 # Tests
-if( TESTS )
+if (TESTS)
     enable_testing()
-    add_subdirectory( tests )
-endif( TESTS )
+    add_subdirectory(tests)
+endif()
+
 
 # install target
 install( TARGETS ${TARGET_NAME} DESTINATION lib )

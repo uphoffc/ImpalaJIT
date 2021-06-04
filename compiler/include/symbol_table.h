@@ -1,5 +1,5 @@
-#ifndef IMPALA_CPP_STATE_H
-#define IMPALA_CPP_STATE_H
+#ifndef IMPALA_CPP_SYMBOL_TABLE_H
+#define IMPALA_CPP_SYMBOL_TABLE_H
 
 #include "engine_types.h"
 #include "llvm/IR/IRBuilder.h"
@@ -48,4 +48,4 @@ private:
 };
 } // namespace impala
 
-#endif // IMPALA_CPP_STATE_H
+#endif // IMPALA_CPP_SYMBOL_TABLE_H

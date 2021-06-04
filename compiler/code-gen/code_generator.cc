@@ -63,20 +63,12 @@ void CodeGenerator::generateLLVMCode(FunctionContext *&functionContext, llvm::Mo
   auto &jit = impala::engine::Jit::getJit();
   {
     auto lock = jit.getLock();
-
-    /*
-    llvm::LLVMContext& context = jit.getContext();
-    auto builder = std::make_unique<llvm::IRBuilder<>>(context);
-    auto& externalFunctions = jit.getExternalMathFunctions();
-    impala::Toolbox tools(context, *builder, externalFunctions);
-    */
     impala::engine::Jit::Toolbox tools = jit.createToolbox();
-
     auto function = this->genFunctionProto(functionContext, module, tools);
     functionContext->root->codegen(tools);
 
     llvm::verifyFunction(*function, &llvm::outs());
-    impala::engine::Jit::printIRModule(module);
+    impala::engine::Jit::printIRFunction(function);
 
     // TODO: delete this one (memory de-allocation bug)
     generateCode(functionContext);

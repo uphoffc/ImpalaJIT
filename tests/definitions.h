@@ -1,0 +1,6 @@
+#ifndef IMPALA_CPP_DEFINITIONS_H
+#define IMPALA_CPP_DEFINITIONS_H
+
+#define CONFIG_FILE_PATH "./conf/impala.conf"
+
+#endif // IMPALA_CPP_DEFINITIONS_H

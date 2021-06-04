@@ -1,50 +1,24 @@
-# Copyright 2017 Manuel Fasching <manuel.fasching@tum.de>
-# Distributed under the MIT License
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is furnished
-# to do so, subject to the following conditions:
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-# PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
-# FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 cmake_minimum_required(VERSION 2.6)
-link_directories(${CMAKE_BINARY_DIR})
-include_directories(${CMAKE_SOURCE_DIR}/include)
+find_package(GTest REQUIRED)
 
-# Add test executable
-function( add_test_executable name )
-        set( sourceFiles
-                ${name}.cc )
+include(CTest)
 
-    add_executable( test_${name}.o ${sourceFiles} )
-    add_test(${name} test_${name}.o)
-
-    # Link with impalajit
-    target_link_libraries( test_${name}.o ${TARGET_NAME} )
-endfunction( add_test_executable )
-
-include_directories(include)
+add_executable(basic_tests ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+                           ${CMAKE_CURRENT_SOURCE_DIR}/basic.cpp
+                           ${CMAKE_CURRENT_SOURCE_DIR}/parameter_count.cpp
+                           ${CMAKE_CURRENT_SOURCE_DIR}/simple_conditionals.cpp)
+target_include_directories(basic_tests PRIVATE ${GTEST_INCLUDE_DIRS} ../include)
+target_link_libraries(basic_tests PRIVATE ${TARGET_NAME} ${GTEST_LIBRARIES})
 
 
-add_test_executable(conditionals_eq)
-add_test_executable(conditionals_lt)
-add_test_executable(conditionals_gt)
-add_test_executable(conditionals_neq)
-add_test_executable(conditionals_lte)
-add_test_executable(conditionals_gte)
-add_test_executable(conditionals_nested)
-add_test_executable(conditionals_complex_1)
-add_test_executable(conditionals_complex_2)
-add_test_executable(multiple_functions)
-add_test_executable(expressions_basic)
-add_test_executable(assignments)
-add_test_executable(many_if)
-add_test_executable(parameter_count)
+add_executable(advanced_tests ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+                              ${CMAKE_CURRENT_SOURCE_DIR}/complex_conditionals.cpp
+                              #${CMAKE_CURRENT_SOURCE_DIR}/many_ifs.cpp
+                              ${CMAKE_CURRENT_SOURCE_DIR}/multiple_functions.cpp)
+target_include_directories(advanced_tests PRIVATE ${GTEST_INCLUDE_DIRS} ../include)
+target_link_libraries(advanced_tests PRIVATE ${TARGET_NAME} ${GTEST_LIBRARIES})
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/impala_files DESTINATION .)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/conf DESTINATION .)
+add_test(NAME basic_tests COMMAND basic_tests)
+add_test(NAME advanced_tests COMMAND advanced_tests)

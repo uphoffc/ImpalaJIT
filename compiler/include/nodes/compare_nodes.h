@@ -33,8 +33,8 @@ public:
 
   llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
     assert(nodes.size() == 2 && "CompareNode must be a binary op");
-    auto lhs = nodes[0]->codegen(tools);
-    auto rhs = nodes[1]->codegen(tools);
+    auto lhs = nodes[1]->codegen(tools);
+    auto rhs = nodes[0]->codegen(tools);
 
     llvm::Value *cmpResult{nullptr};
     switch (compareOperator) {
