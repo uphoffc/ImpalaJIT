@@ -2,7 +2,7 @@
 #define IMPALA_CPP_ENGINE_H
 
 #include "engine_types.h"
-#include "toolbox.h"
+#include "symbol_table.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ExecutionEngine/JITSymbol.h"
 #include "llvm/ExecutionEngine/Orc/CompileUtils.h"
@@ -44,6 +44,17 @@ namespace impala {
 namespace engine {
 class Jit {
 public:
+  struct Toolbox {
+    Toolbox(llvm::LLVMContext &context, engine::types::FunctionProtosT &externalMathFunctions)
+        : context(context), externalMathFunctions(externalMathFunctions) {
+      builder = std::make_unique<llvm::IRBuilder<>>(context);
+    }
+    llvm::LLVMContext &context;
+    engine::types::FunctionProtosT &externalMathFunctions;
+    std::unique_ptr<llvm::IRBuilder<>> builder{nullptr};
+    SymbolTable symbolTable{};
+  };
+
   static Jit &getJit();
 
   const llvm::DataLayout &getDataLayout() const { return *dataLayout; }
@@ -61,6 +72,8 @@ public:
   std::unique_ptr<llvm::Module> createModule();
 
   types::FunctionProtosT &getExternalMathFunctions() { return externalMathFunctions; }
+
+  Jit::Toolbox createToolbox();
 
   static void printIRFunction(llvm::Function *function);
 

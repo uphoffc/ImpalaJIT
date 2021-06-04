@@ -21,7 +21,7 @@
 #define EXPRESSION_H
 
 #include <internal_types.hh>
-#include <toolbox.h>
+#include "engine.h"
 #include <vector>
 #include <iostream>
 
@@ -40,7 +40,7 @@ public:
         nodes.clear();
     }
 
-    virtual llvm::Value* codegen(impala::Toolbox& tools) = 0;
+    virtual llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) = 0;
 };
 
 class RootNode : public Node
@@ -51,7 +51,7 @@ public:
     {
     }
 
-    llvm::Value* codegen(impala::Toolbox& tools) override {
+    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
       for (auto statements: nodes) {
         statements->codegen(tools);
       }

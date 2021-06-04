@@ -42,7 +42,7 @@ public:
     {
     }
 
-    llvm::Value* codegen(impala::Toolbox& tools) override {
+    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
       std::stringstream errStream;
       if (tools.externalMathFunctions.find(name) == tools.externalMathFunctions.end()) {
         errStream << "impala: function `" << name << "` doesn't belong to the standard math library";
@@ -71,7 +71,7 @@ public:
       }
 
       std::cout << "ExternalFunctionNode" << std::endl;
-      return tools.builder.CreateCall(proto, args);
+      return tools.builder->CreateCall(proto, args);
     }
 };
 
@@ -87,7 +87,7 @@ public:
     {
     }
 
-    llvm::Value* codegen(impala::Toolbox& tools) override {
+    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
       std::cout << "ExternalFunctionParametersNode" << std::endl;
       throw std::runtime_error("impala: never been suported by the language");
       return nullptr;

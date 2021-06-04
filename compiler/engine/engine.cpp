@@ -64,7 +64,6 @@ void Jit::addModule(std::unique_ptr<llvm::Module> &module) {
 
 llvm::JITEvaluatedSymbol Jit::lookup(llvm::StringRef Name) {
   // lookup will implicitly trigger compilation for any symbol that has not already been compiled
-  auto &m = *mangle;
   llvm::Expected<llvm::JITEvaluatedSymbol> expected = ES.lookup({jitDylib}, (*mangle)(Name.str()));
   if (!expected) {
     llvm::errs() << expected.takeError() << '\n';
@@ -79,9 +78,15 @@ std::unique_ptr<llvm::Module> Jit::createModule() {
   ++counter;
 
   auto module = std::make_unique<llvm::Module>(std::move(moduleName), *context->getContext());
+
+  // fill with libmath function definitions
   llvm::Type *realType = llvm::Type::getDoubleTy(*(context->getContext()));
   externalMathFunctions = StdMathLib::fillModule(module, realType);
   return module;
+}
+
+Jit::Toolbox Jit::createToolbox() {
+  return Jit::Toolbox(*(context->getContext()), externalMathFunctions);
 }
 
 void Jit::printIRFunction(llvm::Function *function) {

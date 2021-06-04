@@ -31,7 +31,7 @@ public:
     {
     }
 
-    llvm::Value* codegen(impala::Toolbox& tools) override {
+    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
       assert(nodes.empty() && "ConstantNode must be a leaf node");
       std::cout << "ConstantNode" << std::endl;
       auto realType = llvm::Type::getDoubleTy(tools.context);
@@ -47,14 +47,14 @@ public:
             : Node(VARIABLE), name(_name) {
     }
 
-    llvm::Value* codegen(impala::Toolbox& tools) override {
+    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
       assert(nodes.empty() && "VariableNode must have no children");
       auto address = tools.symbolTable[name];
       if (!address) {
         throw std::runtime_error("symbol `" + name + "` have not been defined");
       }
       std::cout << "VariableNode" << std::endl;
-      return tools.builder.CreateLoad(address);
+      return tools.builder->CreateLoad(address);
     }
 };
 
@@ -67,11 +67,11 @@ public:
         nodes.push_back(_node);
     }
 
-    llvm::Value* codegen(impala::Toolbox& tools) override {
+    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
       assert(nodes.size() == 1 && "NegationNode must be a unary operation");
       auto expr = nodes[0]->codegen(tools);
       std::cout << "NegationNode" << std::endl;
-      return tools.builder.CreateFNeg(expr);
+      return tools.builder->CreateFNeg(expr);
     }
 };
 
@@ -85,13 +85,13 @@ public:
         nodes.push_back(_right);
     }
 
-    llvm::Value* codegen(impala::Toolbox& tools) override {
+    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
       assert(nodes.size() == 2 && "AdditionNode must be a binary op");
       auto lhs = nodes[0]->codegen(tools);
       auto rhs = nodes[1]->codegen(tools);
 
       std::cout << "AdditionNode" << std::endl;
-      return tools.builder.CreateFAdd(lhs, rhs);
+      return tools.builder->CreateFAdd(lhs, rhs);
     }
 };
 
@@ -105,13 +105,13 @@ public:
         nodes.push_back(_right);
     }
 
-    llvm::Value* codegen(impala::Toolbox& tools) override {
+    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
       assert(nodes.size() == 2 && "SubtractionNode must be a binary op");
       auto lhs = nodes[0]->codegen(tools);
       auto rhs = nodes[1]->codegen(tools);
 
       std::cout << "SubtractionNode" << std::endl;
-      return tools.builder.CreateFSub(lhs, rhs);
+      return tools.builder->CreateFSub(lhs, rhs);
     }
 };
 
@@ -125,13 +125,13 @@ public:
         nodes.push_back(_right);
     }
 
-    llvm::Value* codegen(impala::Toolbox& tools) override {
+    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
       assert(nodes.size() == 2 && "MultiplicationNode must be a binary op");
       auto lhs = nodes[0]->codegen(tools);
       auto rhs = nodes[1]->codegen(tools);
 
       std::cout << "MultiplicationNode" << std::endl;
-      return tools.builder.CreateFMul(lhs, rhs);
+      return tools.builder->CreateFMul(lhs, rhs);
     }
 };
 
@@ -145,13 +145,13 @@ public:
         nodes.push_back(_right);
     }
 
-    llvm::Value* codegen(impala::Toolbox& tools) override {
+    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
       assert(nodes.size() == 2 && "DivisionNode must be a binary op");
       auto lhs = nodes[0]->codegen(tools);
       auto rhs = nodes[1]->codegen(tools);
 
       std::cout << "DivisionNode" << std::endl;
-      return tools.builder.CreateFDiv(lhs, rhs);
+      return tools.builder->CreateFDiv(lhs, rhs);
     }
 };
 
@@ -165,7 +165,7 @@ public:
         nodes.push_back(_base);
     }
 
-    llvm::Value* codegen(impala::Toolbox& tools) override {
+    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
       assert(nodes.size() == 2 && "DivisionNode must be a binary op");
       auto lhs = nodes[0]->codegen(tools);
       auto rhs = nodes[1]->codegen(tools);

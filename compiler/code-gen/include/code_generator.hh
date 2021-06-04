@@ -23,7 +23,8 @@
 #include <types.hh>
 #include <internal_types.hh>
 #include <function_context.h>
-#include <toolbox.h>
+#include "engine_types.h"
+#include "engine.h"
 #include <vector>
 #include <map>
 #include <assembly__sse_4_1.hh>
@@ -41,7 +42,7 @@ private:
 
     llvm::Function* genFunctionProto(FunctionContext* &functionContext,
                                      llvm::Module& currModule,
-                                     impala::Toolbox &tools);
+                                     impala::engine::Jit::Toolbox &tools);
 
     /**
      * This functions performs the depth-first search algorithm.

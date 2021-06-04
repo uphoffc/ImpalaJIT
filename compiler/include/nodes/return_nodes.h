@@ -31,12 +31,12 @@ public:
         nodes.push_back(_node);
     }
 
-    llvm::Value* codegen(impala::Toolbox& tools) override {
+    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
       assert(nodes.size() == 1 && "VariableNode must have one child");
       std::cout << "ReturnNode" << std::endl;
 
       auto returnValue = nodes[0]->codegen(tools);
-      return tools.builder.CreateRet(returnValue);
+      return tools.builder->CreateRet(returnValue);
     }
 };
 #endif //IMPALAJIT_RETURN_NODE_H

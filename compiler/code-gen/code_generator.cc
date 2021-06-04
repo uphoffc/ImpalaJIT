@@ -73,10 +73,13 @@ void CodeGenerator::generateLLVMCode(FunctionContext* &functionContext, llvm::Mo
   {
     auto lock = jit.getLock();
 
+    /*
     llvm::LLVMContext& context = jit.getContext();
     auto builder = std::make_unique<llvm::IRBuilder<>>(context);
     auto& externalFunctions = jit.getExternalMathFunctions();
     impala::Toolbox tools(context, *builder, externalFunctions);
+    */
+    impala::engine::Jit::Toolbox tools = jit.createToolbox();
 
     auto function = this->genFunctionProto(functionContext, module, tools);
     functionContext->root->codegen(tools);
@@ -92,7 +95,7 @@ void CodeGenerator::generateLLVMCode(FunctionContext* &functionContext, llvm::Mo
 
 llvm::Function* CodeGenerator::genFunctionProto(FunctionContext* &functionContext,
                                                 llvm::Module& currModule,
-                                                impala::Toolbox &tools) {
+                                                impala::engine::Jit::Toolbox &tools) {
 
   const auto numParams = functionContext->parameters.size();
   auto typeReal = llvm::Type::getDoubleTy(tools.context);
@@ -107,7 +110,7 @@ llvm::Function* CodeGenerator::genFunctionProto(FunctionContext* &functionContex
                                          currModule);
 
   llvm::BasicBlock *entryBlock = llvm::BasicBlock::Create(tools.context, "entry", function);
-  tools.builder.SetInsertPoint(entryBlock);
+  tools.builder->SetInsertPoint(entryBlock);
 
   const auto& params = functionContext->parameters;
   auto realType = llvm::Type::getDoubleTy(tools.context);
@@ -115,9 +118,9 @@ llvm::Function* CodeGenerator::genFunctionProto(FunctionContext* &functionContex
     llvm::Argument* arg = function->getArg(i);
     arg->setName(params[i]);
 
-    auto argPtr = tools.builder.CreateAlloca(realType);
+    auto argPtr = tools.builder->CreateAlloca(realType);
     tools.symbolTable.addSymbol(params[i], argPtr);
-    tools.builder.CreateStore(arg, argPtr);
+    tools.builder->CreateStore(arg, argPtr);
   }
 
   return function;

@@ -33,7 +33,7 @@ public:
         nodes.push_back(_left);
     }
 
-    llvm::Value* codegen(impala::Toolbox& tools) override {
+    llvm::Value* codegen(impala::engine::Jit::Toolbox& tools) override {
       assert(nodes.size() == 2 && "CompareNode must be a binary op");
       auto lhs = nodes[0]->codegen(tools);
       auto rhs = nodes[1]->codegen(tools);
@@ -41,32 +41,32 @@ public:
       llvm::Value* cmpResult{nullptr};
       switch (compareOperator) {
         case CompareOperatorType::EQ: {
-          cmpResult = tools.builder.CreateFCmpOEQ(lhs, rhs);
+          cmpResult = tools.builder->CreateFCmpOEQ(lhs, rhs);
           break;
         }
         case CompareOperatorType::NE: {
-          cmpResult = tools.builder.CreateFCmpONE(lhs, rhs);
+          cmpResult = tools.builder->CreateFCmpONE(lhs, rhs);
           break;
         }
         case CompareOperatorType::GT: {
-          cmpResult = tools.builder.CreateFCmpOGT(lhs, rhs);
+          cmpResult = tools.builder->CreateFCmpOGT(lhs, rhs);
           break;
         }
         case CompareOperatorType::LT: {
-          cmpResult = tools.builder.CreateFCmpOLT(lhs, rhs);
+          cmpResult = tools.builder->CreateFCmpOLT(lhs, rhs);
           break;
         }
         case CompareOperatorType::GTE: {
-          cmpResult = tools.builder.CreateFCmpOGE(lhs, rhs);
+          cmpResult = tools.builder->CreateFCmpOGE(lhs, rhs);
           break;
         }
         case CompareOperatorType::LTE: {
-          cmpResult = tools.builder.CreateFCmpOLE(lhs, rhs);
+          cmpResult = tools.builder->CreateFCmpOLE(lhs, rhs);
           break;
         }
         default: {
           std::string msg = "Unknown comparison operator: " + std::to_string(static_cast<char>(compareOperator));
-          throw std::runtime_error(std::move(msg));
+          throw std::runtime_error(msg);
         }
       }
 
