@@ -60,7 +60,22 @@ void Jit::createMathModule() {
   mathModule = this->createModule();
   llvm::Type *realType = llvm::Type::getDoubleTy(*(context->getContext()));
   externalMathFunctions = StdMathLib::fillModule(mathModule, realType);
-  //this->addModule(mathModule);
+  llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
+  /*
+  llvm::DenseSet<llvm::orc::SymbolStringPtr> allowList({
+    (*mangle)("puts"),
+    (*mangle)("pow")
+  });
+
+  auto expected = llvm::orc::DynamicLibrarySearchGenerator::GetForCurrentProcess(
+      dataLayout->getGlobalPrefix(),
+      [&allowList](const llvm::orc::SymbolStringPtr &symbol) { return allowList.count(symbol); });
+
+  if (!expected) {
+    throw std::runtime_error("impala: cannot resolve math symbols");
+  }
+  jitDylib->addGenerator(std::move(*expected));
+  */
 }
 
 void Jit::addModule(std::unique_ptr<llvm::Module> &module) {

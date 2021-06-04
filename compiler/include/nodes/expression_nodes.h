@@ -48,12 +48,13 @@ public:
     }
 
     llvm::Value* codegen(impala::Toolbox& tools) override {
-      assert(nodes.size() == 0 && "VariableNode must have no children");
-      std::cout << "VariableNode" << std::endl;
-      if (tools.table.find(name) == tools.table.end()) {
-        std::runtime_error("symbol `" + name + "` have not been found");
+      assert(nodes.empty() && "VariableNode must have no children");
+      auto address = tools.symbolTable[name];
+      if (!address) {
+        throw std::runtime_error("symbol `" + name + "` have not been defined");
       }
-      return tools.builder.CreateLoad(tools.table[name]);
+      std::cout << "VariableNode" << std::endl;
+      return tools.builder.CreateLoad(address);
     }
 };
 
@@ -170,6 +171,7 @@ public:
       auto rhs = nodes[1]->codegen(tools);
 
       std::cout << "PowerNode" << std::endl;
+      // TODO: return result
       return nullptr;
     }
 };

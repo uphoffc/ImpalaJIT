@@ -106,7 +106,7 @@ if( STATIC_LIB )
     set_target_properties( ${TARGET_NAME} PROPERTIES OUTPUT_NAME impalajit )
 endif( STATIC_LIB )
 
-target_link_libraries( ${TARGET_NAME} PUBLIC ${math_library} ${LLVM_LIBS} )
+target_link_libraries( ${TARGET_NAME} PUBLIC -rdynamic -lm ${math_library} ${LLVM_LIBS})
 target_include_directories( ${TARGET_NAME} PRIVATE ${LLVM_INCLUDE_DIRS} )
 target_compile_definitions( ${TARGET_NAME} PRIVATE ${LLVM_DEFINITIONS} )
 

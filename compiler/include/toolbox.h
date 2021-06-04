@@ -16,10 +16,10 @@ struct SymbolTable {
   SymbolTable() = default;
 
   void removeScope() { scopes.pop_back(); }
-  void addScope() { scopes.push_back(TableT{});}
+  void addScope() { scopes.emplace_back(TableT{});}
   size_t getNumScopes() {return scopes.size();}
 
-  llvm::Value* findSymbol(std::string name) {
+  llvm::Value* operator[](const std::string& name) {
     for (auto scope = scopes.rbegin(); scope != scopes.rend(); ++scope) {
       if (scope->find(name) != scope->end()) {
         return (*scope)[name];
@@ -28,7 +28,7 @@ struct SymbolTable {
     return nullptr;
   }
 
-  void addSymbol(std::string name, llvm::Value* value) {
+  void addSymbol(const std::string& name, llvm::Value* value) {
     if (scopes.empty()) {
       this->addScope();
     }
@@ -50,7 +50,6 @@ private:
 };
 
 
-using TableT = std::unordered_map<std::string, llvm::Value *>;
 struct Toolbox {
   Toolbox(llvm::LLVMContext &context, llvm::IRBuilder<> &builder, engine::types::FunctionProtosT &externalMathFunctions)
       : context(context), builder(builder), externalMathFunctions(externalMathFunctions) {}
@@ -58,7 +57,7 @@ struct Toolbox {
   llvm::IRBuilder<> &builder;
   llvm::LLVMContext &context;
   engine::types::FunctionProtosT &externalMathFunctions;
-  TableT table{};
+  SymbolTable symbolTable{};
 };
 } // namespace impala
 

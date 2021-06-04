@@ -41,16 +41,14 @@ public:
       assert(nodes.size() == 1 && "AssignmentNode must have one child expr");
       auto expr = nodes[0]->codegen(tools);
 
-      if (tools.table.find(name) != tools.table.end()) {
-        auto lhs = tools.table[name];
-        tools.builder.CreateStore(expr, lhs);
+      auto address = tools.symbolTable[name];
+      if (!address) {
+        auto realType = llvm::Type::getDoubleTy(tools.context);
+        address = tools.builder.CreateAlloca(realType);
+        tools.symbolTable.addSymbol(name, address);
       }
-      else {
-        // TODO: add support for scopes
-        auto varDef = tools.builder.CreateAlloca(llvm::Type::getDoubleTy(tools.context));
-        tools.builder.CreateStore(expr, varDef);
-        tools.table[name] = varDef;
-      }
+      std::cout << "AssignmentNode" << std::endl;
+      tools.builder.CreateStore(expr, address);
       return nullptr;
     }
 };

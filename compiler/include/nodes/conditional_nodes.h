@@ -42,8 +42,9 @@ public:
     currFunction->getBasicBlockList().push_back(mergeBlock);
 
     tools.builder.SetInsertPoint(thenBlock);
-    auto lastInstr = nodes[1]->codegen(tools);
-    if (llvm::dyn_cast<llvm::ReturnInst>(lastInstr) != nullptr) {
+    nodes[1]->codegen(tools);
+    auto &lastInstr = tools.builder.GetInsertBlock()->back();
+    if (!llvm::isa<llvm::ResumeInst>(lastInstr)) {
       tools.builder.CreateBr(mergeBlock);
     }
 
@@ -77,15 +78,17 @@ public:
     tools.builder.CreateCondBr(cond, thenBlock, elseBlock);
 
     tools.builder.SetInsertPoint(thenBlock);
-    auto lastThenBlockInstr = nodes[1]->codegen(tools);
-    bool noReturnInThenBlock = llvm::dyn_cast<llvm::ReturnInst>(lastThenBlockInstr) == nullptr;
+    nodes[1]->codegen(tools);
+    auto &lastThenBlockInstr = tools.builder.GetInsertBlock()->back();
+    bool noReturnInThenBlock = !llvm::isa<llvm::ReturnInst>(lastThenBlockInstr);
     if (noReturnInThenBlock) {
       tools.builder.CreateBr(mergeBlock);
     }
 
     tools.builder.SetInsertPoint(elseBlock);
-    auto lastElseBlockInstr = nodes[2]->codegen(tools);
-    bool noReturnInElseBlock = llvm::dyn_cast<llvm::ReturnInst>(lastElseBlockInstr) == nullptr;
+    nodes[2]->codegen(tools);
+    auto& lastElseBlockInstr = tools.builder.GetInsertBlock()->back();
+    bool noReturnInElseBlock = !llvm::isa<llvm::ReturnInst>(lastElseBlockInstr);
     if (noReturnInElseBlock) {
       tools.builder.CreateBr(mergeBlock);
     }
@@ -107,16 +110,18 @@ public:
   virtual ~IfBodyNode() {}
 
   llvm::Value *codegen(impala::Toolbox &tools) override {
-    llvm::Value *lastInstruction{nullptr};
+    tools.symbolTable.addScope();
     for (auto node : nodes) {
-      lastInstruction = node->codegen(tools);
-      if (llvm::dyn_cast<llvm::ReturnInst>(lastInstruction)) {
+      node->codegen(tools);
+      auto& lastInstruction = tools.builder.GetInsertBlock()->back();
+      if (llvm::isa<llvm::ResumeInst>(lastInstruction)) {
         // a return instruction found. Doesn't make sense to generate the rest of the instructions
         break;
       }
     }
+    tools.symbolTable.removeScope();
     std::cout << "IfBodyNode" << std::endl;
-    return lastInstruction;
+    return nullptr;
   }
 };
 
@@ -127,16 +132,18 @@ public:
   virtual ~ElseBodyNode() {}
 
   llvm::Value *codegen(impala::Toolbox &tools) override {
-    llvm::Value *lastInstruction{nullptr};
+    tools.symbolTable.addScope();
     for (auto node : nodes) {
-      lastInstruction = node->codegen(tools);
-      if (llvm::dyn_cast<llvm::ReturnInst>(lastInstruction)) {
+      node->codegen(tools);
+      auto &lastInstruction = tools.builder.GetInsertBlock()->back();
+      if (llvm::isa<llvm::ResumeInst>(lastInstruction)) {
         // a return instruction found. Doesn't make sense to generate the rest of the instructions
         break;
       }
     }
+    tools.symbolTable.removeScope();
     std::cout << "ElseBodyNode" << std::endl;
-    return lastInstruction;
+    return nullptr;
   }
 };
 #endif // IMPALAJIT_COMPLEX_EXPRESSION_H

@@ -116,7 +116,7 @@ llvm::Function* CodeGenerator::genFunctionProto(FunctionContext* &functionContex
     arg->setName(params[i]);
 
     auto argPtr = tools.builder.CreateAlloca(realType);
-    tools.table[params[i]] = argPtr;
+    tools.symbolTable.addSymbol(params[i], argPtr);
     tools.builder.CreateStore(arg, argPtr);
   }
 
