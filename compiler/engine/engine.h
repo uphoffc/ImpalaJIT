@@ -1,7 +1,8 @@
 #ifndef IMPALA_CPP_ENGINE_H
 #define IMPALA_CPP_ENGINE_H
 
-#include "std_math_lib.h"
+#include "engine_types.h"
+#include "toolbox.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ExecutionEngine/JITSymbol.h"
 #include "llvm/ExecutionEngine/Orc/CompileUtils.h"
@@ -67,8 +68,6 @@ public:
 
 private:
   Jit();
-  void createMathModule();
-
   llvm::orc::ExecutionSession ES;
   std::unique_ptr<llvm::orc::RTDyldObjectLinkingLayer> objectLayer{nullptr};
   std::unique_ptr<llvm::orc::IRCompileLayer> compileLayer{nullptr};
@@ -77,7 +76,6 @@ private:
   std::unique_ptr<llvm::DataLayout> dataLayout{nullptr};
   std::unique_ptr<llvm::orc::MangleAndInterner> mangle{nullptr};
   std::unique_ptr<llvm::orc::ThreadSafeContext> context{nullptr};
-  std::unique_ptr<llvm::Module> mathModule{nullptr};
   types::FunctionProtosT externalMathFunctions;
 }; // namespace Jit
 } // namespace engine

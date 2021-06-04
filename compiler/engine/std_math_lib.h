@@ -17,8 +17,11 @@ public:
   static bool isSupported(const types::FunctionSinatureT &signature);
 
 private:
-  static const std::unordered_set<types::FunctionSinatureT, impala::FunctionSignatureHash> supportedFunctions;
-  std::unordered_map<std::string, llvm::Function *> functionTable;
+  using SupportedFunctionSetT = std::unordered_set<types::FunctionSinatureT, impala::FunctionSignatureHash>;
+  using FunctionAliasingMapT = std::unordered_map<std::string, std::string>;
+
+  static SupportedFunctionSetT& getSupportedFunctionSet();
+  static FunctionAliasingMapT& getFunctionAliasingMap();
 };
 } // namespace engine
 } // namespace impala

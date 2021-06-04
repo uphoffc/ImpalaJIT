@@ -1,4 +1,5 @@
 #include "engine.h"
+#include "std_math_lib.h"
 #include "llvm/IR/IRPrintingPasses.h"
 #include "llvm/IR/PassManager.h"
 #include <memory>
@@ -45,37 +46,16 @@ Jit::Jit() {
     const std::string dylibName{"jit_dylib"};
     ES.createJITDylib(dylibName);
     jitDylib = ES.getJITDylibByName(dylibName);
+    jitDylib->addGenerator(llvm::cantFail(llvm::orc::DynamicLibrarySearchGenerator::GetForCurrentProcess(
+        dataLayout->getGlobalPrefix())));
 
     // create llvm context
     context = std::make_unique<llvm::orc::ThreadSafeContext>(std::make_unique<llvm::LLVMContext>());
 
-    this->createMathModule();
   } catch (const std::exception &err) {
     llvm::errs() << err.what() << '\n';
     throw err;
   }
-}
-
-void Jit::createMathModule() {
-  mathModule = this->createModule();
-  llvm::Type *realType = llvm::Type::getDoubleTy(*(context->getContext()));
-  externalMathFunctions = StdMathLib::fillModule(mathModule, realType);
-  llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
-  /*
-  llvm::DenseSet<llvm::orc::SymbolStringPtr> allowList({
-    (*mangle)("puts"),
-    (*mangle)("pow")
-  });
-
-  auto expected = llvm::orc::DynamicLibrarySearchGenerator::GetForCurrentProcess(
-      dataLayout->getGlobalPrefix(),
-      [&allowList](const llvm::orc::SymbolStringPtr &symbol) { return allowList.count(symbol); });
-
-  if (!expected) {
-    throw std::runtime_error("impala: cannot resolve math symbols");
-  }
-  jitDylib->addGenerator(std::move(*expected));
-  */
 }
 
 void Jit::addModule(std::unique_ptr<llvm::Module> &module) {
