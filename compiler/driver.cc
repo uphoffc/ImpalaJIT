@@ -23,7 +23,7 @@
 
 #include <driver.h>
 #include <scanner.h>
-#include <code_generator.hh>
+#include <code_generator.h>
 #include <semantic_analyzer.hh>
 
 namespace impalajit {
@@ -33,34 +33,6 @@ Driver::Driver()
 
 Driver::~Driver(){
     delete functionContext;
-}
-
-std::map<std::string,dasm_gen_func> Driver::parse_stream(std::istream& in)
-{
-    Scanner scanner(&in);
-    scanner.set_debug(false);
-    this->lexer = &scanner;
-
-    Parser parser(*this);
-    parser.set_debug_level(false);
-    parser.parse();
-
-    SemanticAnalyzer semanticAnalyzer;
-    semanticAnalyzer.performSemanticAnalysis(functionContext);
-
-    CodeGenerator codeGenerator;
-    dasm_gen_func function = codeGenerator.generateCode(functionContext);
-
-    std::map<std::string, dasm_gen_func> resultMap;
-    resultMap.insert(std::make_pair(functionContext->name, function));
-
-    return resultMap;
-}
-
-std::map<std::string,dasm_gen_func> Driver::parse_string(const std::string &input)
-{
-    std::istringstream iss(input);
-    return parse_stream(iss);
 }
 
 FunctionContext::FunctionSinatureT Driver::generateLLVMFunction(std::istream& in,

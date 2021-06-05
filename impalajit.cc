@@ -92,15 +92,6 @@ void impalajit::Compiler::compile(Options options) {
   }
 }
 
-void impalajit::Compiler::compileLegacy(){
-    for(auto& definition: functionDefinitions) {
-        auto parsedFunctions = driver.parse_string(definition);
-        functionMap.insert(parsedFunctions.begin(), parsedFunctions.end());
-        parameterCountMap.insert(std::make_pair(parsedFunctions.begin()->first, driver.getParameterCount()));
-        driver.deleteFunctionContext();
-    }
-}
-
 dasm_gen_func impalajit::Compiler::getFunction(std::string functionName) {
     if(functionMap.find(functionName) == functionMap.end()){
         throw std::runtime_error("Function \""+functionName+"\" not found");

@@ -17,22 +17,31 @@
  * THE SOFTWARE.
  */
 
-#ifndef IMPALAJIT_CALCULATION_HELPER_HH
-#define IMPALAJIT_CALCULATION_HELPER_HH
+#ifndef IMPALAJIT_CODE_GENERATOR_HH
+#define IMPALAJIT_CODE_GENERATOR_HH
 
-/**
- * This class contains functions, which are available
- * in impala files. If you add functions, add also the
- * pointer in ptr_map_container.hh
- */
-class CalculationHelper {
+#include "engine.h"
+#include "engine_types.h"
+#include <cmath>
+#include <function_context.h>
+#include <internal_types.hh>
+#include <map>
+#include <types.hh>
+#include <vector>
+
+
+class CodeGenerator {
+private:
+
+  static llvm::Function *genFunctionProto(FunctionContext *&functionContext,
+                                          llvm::Module &currModule,
+                                          impala::engine::Jit::Toolbox &tools,
+                                          llvm::Type* realType);
+
 public:
-  /**
-   * Trivial...
-   *
-   * @param value value
-   * @return -value
-   */
-  static double changeSign(double value) { return -value; }
+  CodeGenerator() = default;
+  ~CodeGenerator() = default;
+
+  static void generateLLVMCode(FunctionContext *&functionContext, llvm::Module &module, const impalajit::Options& options);
 };
-#endif // IMPALAJIT_CALCULATION_HELPER_HH
+#endif // IMPALAJIT_CODE_GENERATOR_HH

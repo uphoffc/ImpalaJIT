@@ -35,7 +35,6 @@ set(include_dirs
         compiler/frontend/include
         compiler/semantic_analysis/include
         compiler/code-gen/include
-        compiler/code-gen/assembly/include
         compiler/engine)
 
 include_directories(${include_dirs})
@@ -54,10 +53,7 @@ set(source_files ${source_files}
         compiler/include/nodes/boolean_nodes.h
         compiler/include/nodes/assignment_nodes.h
         compiler/semantic_analysis/semantic_analyzer.cc
-        compiler/code-gen/include/ptr_map_container.hh
-        compiler/code-gen/include/calculation_helper.hh
-        compiler/code-gen/code_generator.cc
-        compiler/code-gen/assembly/assembly__sse_4_1.cc
+        compiler/code-gen/code_generator.cpp
         compiler/code-gen/codegen_visitor.cpp
         compiler/code-gen/pretty_printer.cpp
         compiler/engine/engine.cpp

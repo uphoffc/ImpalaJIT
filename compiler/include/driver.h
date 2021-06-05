@@ -39,10 +39,6 @@ public:
 
   class Scanner *lexer;
 
-  std::map<std::string, dasm_gen_func> parse_stream(std::istream &in);
-
-  std::map<std::string, dasm_gen_func> parse_string(const std::string &input);
-
   FunctionContext::FunctionSinatureT generateLLVMFunction(std::istream &in,
                                                           llvm::Module &module,
                                                           const impalajit::Options& options);

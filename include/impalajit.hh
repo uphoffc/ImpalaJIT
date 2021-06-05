@@ -40,7 +40,6 @@ public:
     Compiler(std::vector<std::string> _functionDefinitions);
     Compiler();
 
-    void compileLegacy();
     void compile(Options options = Options());
     dasm_gen_func getFunction(std::string functionName);
     unsigned int getParameterCount(std::string functionName);
