@@ -22,4 +22,14 @@
 
 typedef double (*dasm_gen_func)(...);
 
+namespace impalajit {
+struct Options {
+  Options() : debug(false), printAST(false), printIR(false), isDoublePrecision(true) {}
+  bool debug;
+  bool printAST;
+  bool printIR;
+  bool isDoublePrecision;
+};
+}
+
 #endif //IMPALAJIT_DASM_GEN_FUNCTION_H

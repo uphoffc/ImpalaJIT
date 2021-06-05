@@ -72,7 +72,7 @@ llvm::JITEvaluatedSymbol Jit::lookup(llvm::StringRef Name) {
   return *expected;
 }
 
-std::unique_ptr<llvm::Module> Jit::createModule() {
+std::unique_ptr<llvm::Module> Jit::createModule(bool isDoublePrecision) {
   static long long counter{0};
   std::string moduleName{"impala_module_" + std::to_string(counter)};
   ++counter;
@@ -80,8 +80,7 @@ std::unique_ptr<llvm::Module> Jit::createModule() {
   auto module = std::make_unique<llvm::Module>(std::move(moduleName), *context->getContext());
 
   // fill with libmath function definitions
-  llvm::Type *realType = llvm::Type::getDoubleTy(*(context->getContext()));
-  externalMathFunctions = StdMathLib::fillModule(module, realType);
+  externalMathFunctions = StdMathLib::fillModule(module, isDoublePrecision);
   return module;
 }
 

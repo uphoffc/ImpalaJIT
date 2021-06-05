@@ -17,16 +17,18 @@
  * THE SOFTWARE.
  */
 
-
 #include <impalajit.hh>
 #include <iostream>
 
-int main()
-{
-    impalajit::Compiler compiler("example.conf");
-    compiler.compile();
-    //compiler.compile();
-    dasm_gen_func example = compiler.getFunction("example");
-    std::cout << "Result: " << example(3.0, 4.0) << std::endl;
-    return 0;
+int main() {
+  impalajit::Options options;
+  options.printIR = true;
+  options.printAST = true;
+
+  impalajit::Compiler compiler("example.conf");
+
+  compiler.compile(options);
+  dasm_gen_func example = compiler.getFunction("example");
+  std::cout << "Result: " << example(3.0, 4.0) << std::endl;
+  return 0;
 }

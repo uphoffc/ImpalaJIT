@@ -26,7 +26,10 @@ bool StdMathLib::isSupported(const types::FunctionSinatureT &signature) {
   return supportedSet.find(signature) != supportedSet.end();
 }
 
-types::FunctionProtosT StdMathLib::fillModule(std::unique_ptr<llvm::Module> &module, llvm::Type *realType) {
+types::FunctionProtosT StdMathLib::fillModule(std::unique_ptr<llvm::Module> &module, bool isDoublePrecision) {
+
+  auto& context = module->getContext();
+  llvm::Type *realType = (isDoublePrecision) ? llvm::Type::getDoubleTy(context) : llvm::Type::getFloatTy(context);
   std::unordered_map<std::string, llvm::Function *> functionProtoTable;
 
   auto &supportedSet = StdMathLib::getSupportedFunctionSet();

@@ -63,7 +63,9 @@ std::map<std::string,dasm_gen_func> Driver::parse_string(const std::string &inpu
     return parse_stream(iss);
 }
 
-FunctionContext::FunctionSinatureT Driver::generateLLVMFunction(std::istream& in, llvm::Module& module) {
+FunctionContext::FunctionSinatureT Driver::generateLLVMFunction(std::istream& in,
+                                                                llvm::Module& module,
+                                                                const impalajit::Options& options) {
   Scanner scanner(&in);
   scanner.set_debug(false);
   this->lexer = &scanner;
@@ -76,14 +78,15 @@ FunctionContext::FunctionSinatureT Driver::generateLLVMFunction(std::istream& in
   semanticAnalyzer.performSemanticAnalysis(functionContext);
 
   CodeGenerator codeGenerator;
-  codeGenerator.generateLLVMCode(functionContext, module);
+  codeGenerator.generateLLVMCode(functionContext, module, options);
   return std::make_pair(functionContext->name, functionContext->parameters.size());
 }
 
 FunctionContext::FunctionSinatureT Driver::generateLLVMFunction(const std::string &input,
-                                                                llvm::Module& module) {
+                                                                llvm::Module& module,
+                                                                const impalajit::Options& options) {
   std::istringstream iss(input);
-  auto signature = generateLLVMFunction(iss, module);
+  auto signature = generateLLVMFunction(iss, module, options);
   return signature;
 }
 

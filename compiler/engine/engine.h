@@ -69,7 +69,7 @@ public:
   // looks up addresses for function and variable definitions added to the JIT based on their symbol names.
   llvm::JITEvaluatedSymbol lookup(llvm::StringRef Name);
 
-  std::unique_ptr<llvm::Module> createModule();
+  std::unique_ptr<llvm::Module> createModule(bool isDoublePrecision);
 
   types::FunctionProtosT &getExternalMathFunctions() { return externalMathFunctions; }
 

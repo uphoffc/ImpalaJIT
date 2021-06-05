@@ -34,25 +34,25 @@
 namespace impalajit{
     class Compiler;
 }
-class impalajit::Compiler{
-private:
-    std::vector<std::string> functionDefinitions;
-    std::map<std::string, dasm_gen_func> functionMap;
-    std::map<std::string, unsigned int> parameterCountMap;
-
-    void loadFunctionDefinitionsFromInputFiles(std::string _configPath);
+class impalajit::Compiler {
 public:
-
     Compiler(std::string _configFilePath);
     Compiler(std::vector<std::string> _functionDefinitions);
     Compiler();
 
     void compileLegacy();
-    void compile();
+    void compile(Options options = Options());
     dasm_gen_func getFunction(std::string functionName);
     unsigned int getParameterCount(std::string functionName);
 
     void close();
+
+
+private:
+  std::vector<std::string> functionDefinitions;
+  std::map<std::string, dasm_gen_func> functionMap;
+  std::map<std::string, unsigned int> parameterCountMap;
+  void loadFunctionDefinitionsFromInputFiles(std::string _configPath);
 };
 
 typedef impalajit::Compiler impalajit_compiler;

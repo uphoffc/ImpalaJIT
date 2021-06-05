@@ -75,12 +75,12 @@ void impalajit::Compiler::loadFunctionDefinitionsFromInputFiles(std::string _con
     }
 }
 
-void impalajit::Compiler::compile() {
+void impalajit::Compiler::compile(Options options) {
   auto& jit = impala::engine::Jit::getJit();
-  auto currentModule = jit.createModule();
+  auto currentModule = jit.createModule(options.isDoublePrecision);
   std::vector<FunctionContext::FunctionSinatureT> functionSignature;
   for(auto& definition: functionDefinitions) {
-    functionSignature.emplace_back(driver.generateLLVMFunction(definition, *currentModule));
+    functionSignature.emplace_back(driver.generateLLVMFunction(definition, *currentModule, options));
     driver.deleteFunctionContext();
   }
   jit.addModule(currentModule);

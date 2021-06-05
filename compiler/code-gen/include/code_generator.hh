@@ -40,8 +40,10 @@ private:
 
   Assembly__SSE_4_1 assembly;
 
-  llvm::Function *genFunctionProto(FunctionContext *&functionContext, llvm::Module &currModule,
-                                   impala::engine::Jit::Toolbox &tools);
+  llvm::Function *genFunctionProto(FunctionContext *&functionContext,
+                                   llvm::Module &currModule,
+                                   impala::engine::Jit::Toolbox &tools,
+                                   llvm::Type* realType);
 
   /**
    * This functions performs the depth-first search algorithm.
@@ -115,6 +117,6 @@ public:
    */
   dasm_gen_func generateCode(FunctionContext *&functionContext);
 
-  void generateLLVMCode(FunctionContext *&functionContext, llvm::Module &module);
+  void generateLLVMCode(FunctionContext *&functionContext, llvm::Module &module, const impalajit::Options& options);
 };
 #endif // IMPALAJIT_CODE_GENERATOR_HH

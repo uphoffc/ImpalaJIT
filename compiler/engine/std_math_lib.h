@@ -13,7 +13,7 @@ namespace impala {
 namespace engine {
 class StdMathLib {
 public:
-  static types::FunctionProtosT fillModule(std::unique_ptr<llvm::Module> &module, llvm::Type *realType);
+  static types::FunctionProtosT fillModule(std::unique_ptr<llvm::Module> &module, bool isDoublePrecision);
   static bool isSupported(const types::FunctionSinatureT &signature);
 
 private:

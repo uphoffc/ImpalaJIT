@@ -115,7 +115,6 @@ void CodegenVisitor::visit(VariableNode *node) {
 
 void CodegenVisitor::visit(ConstantNode *node) {
   assert(node->nodes.empty() && "ConstantNode must have no children");
-  auto realType = llvm::Type::getDoubleTy(toolbox.context);
   stack.push(llvm::ConstantFP::get(realType, node->value));
 }
 
@@ -188,7 +187,6 @@ void CodegenVisitor::visit(AssignmentNode *node) {
 
   auto address = toolbox.symbolTable[node->name];
   if (!address) {
-    auto realType = llvm::Type::getDoubleTy(toolbox.context);
     address = toolbox.builder->CreateAlloca(realType);
     toolbox.symbolTable.addSymbol(node->name, address);
   }
