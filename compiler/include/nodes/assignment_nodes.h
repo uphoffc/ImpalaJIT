@@ -29,19 +29,8 @@ public:
 
   virtual ~AssignmentNode() {}
 
-  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
-    assert(nodes.size() == 1 && "AssignmentNode must have one child expr");
-    auto expr = nodes[0]->codegen(tools);
-
-    auto address = tools.symbolTable[name];
-    if (!address) {
-      auto realType = llvm::Type::getDoubleTy(tools.context);
-      address = tools.builder->CreateAlloca(realType);
-      tools.symbolTable.addSymbol(name, address);
-    }
-    std::cout << "AssignmentNode" << std::endl;
-    tools.builder->CreateStore(expr, address);
-    return nullptr;
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
   }
 };
 #endif // IMPALAJIT_ASSIGNMENT_EXPRESSION_HH

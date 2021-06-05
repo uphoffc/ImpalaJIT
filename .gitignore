@@ -3,3 +3,4 @@ minilua
 build
 lib/*
 cmake-build-*
+.vscode

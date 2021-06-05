@@ -26,12 +26,8 @@ class ReturnNode : public Node {
 public:
   ReturnNode(Node *_node) : Node(RETURN) { nodes.push_back(_node); }
 
-  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
-    assert(nodes.size() == 1 && "VariableNode must have one child");
-    std::cout << "ReturnNode" << std::endl;
-
-    auto returnValue = nodes[0]->codegen(tools);
-    return tools.builder->CreateRet(returnValue);
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
   }
 };
 #endif // IMPALAJIT_RETURN_NODE_H

@@ -58,6 +58,8 @@ set(source_files ${source_files}
         compiler/code-gen/include/calculation_helper.hh
         compiler/code-gen/code_generator.cc
         compiler/code-gen/assembly/assembly__sse_4_1.cc
+        compiler/code-gen/codegen_visitor.cpp
+        compiler/code-gen/pretty_printer.cpp
         compiler/engine/engine.cpp
         compiler/engine/std_math_lib.cpp)
 

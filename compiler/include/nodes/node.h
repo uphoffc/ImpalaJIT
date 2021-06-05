@@ -21,9 +21,11 @@
 #define EXPRESSION_H
 
 #include "engine.h"
+#include "abstract_visitor.h"
 #include <internal_types.hh>
 #include <iostream>
 #include <vector>
+
 
 class Node {
 public:
@@ -33,19 +35,15 @@ public:
   Node(NodeType _nodeType) : nodeType(_nodeType) {}
   virtual ~Node() { nodes.clear(); }
 
-  virtual llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) = 0;
+  virtual void accept(impala::AbstractVisitor* visitor) = 0;
 };
 
 class RootNode : public Node {
 public:
   RootNode() : Node(ROOT) {}
 
-  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
-    for (auto statements : nodes) {
-      statements->codegen(tools);
-    }
-    std::cout << "Im root" << std::endl;
-    return nullptr;
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
   }
 };
 

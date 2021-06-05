@@ -27,11 +27,8 @@ public:
   double value;
   explicit ConstantNode(double _value) : Node(CONSTANT), value(_value) {}
 
-  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
-    assert(nodes.empty() && "ConstantNode must be a leaf node");
-    std::cout << "ConstantNode" << std::endl;
-    auto realType = llvm::Type::getDoubleTy(tools.context);
-    return llvm::ConstantFP::get(realType, value);
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
   }
 };
 
@@ -41,14 +38,8 @@ public:
   std::string &name;
   VariableNode(std::string &_name) : Node(VARIABLE), name(_name) {}
 
-  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
-    assert(nodes.empty() && "VariableNode must have no children");
-    auto address = tools.symbolTable[name];
-    if (!address) {
-      throw std::runtime_error("symbol `" + name + "` have not been defined");
-    }
-    std::cout << "VariableNode" << std::endl;
-    return tools.builder->CreateLoad(address);
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
   }
 };
 
@@ -56,11 +47,8 @@ class NegationNode : public Node {
 public:
   NegationNode(Node *_node) : Node(NEGATION) { nodes.push_back(_node); }
 
-  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
-    assert(nodes.size() == 1 && "NegationNode must be a unary operation");
-    auto expr = nodes[0]->codegen(tools);
-    std::cout << "NegationNode" << std::endl;
-    return tools.builder->CreateFNeg(expr);
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
   }
 };
 
@@ -71,13 +59,8 @@ public:
     nodes.push_back(_right);
   }
 
-  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
-    assert(nodes.size() == 2 && "AdditionNode must be a binary op");
-    auto lhs = nodes[0]->codegen(tools);
-    auto rhs = nodes[1]->codegen(tools);
-
-    std::cout << "AdditionNode" << std::endl;
-    return tools.builder->CreateFAdd(lhs, rhs);
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
   }
 };
 
@@ -88,13 +71,8 @@ public:
     nodes.push_back(_right);
   }
 
-  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
-    assert(nodes.size() == 2 && "SubtractionNode must be a binary op");
-    auto lhs = nodes[0]->codegen(tools);
-    auto rhs = nodes[1]->codegen(tools);
-
-    std::cout << "SubtractionNode" << std::endl;
-    return tools.builder->CreateFSub(lhs, rhs);
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
   }
 };
 
@@ -105,13 +83,8 @@ public:
     nodes.push_back(_right);
   }
 
-  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
-    assert(nodes.size() == 2 && "MultiplicationNode must be a binary op");
-    auto lhs = nodes[0]->codegen(tools);
-    auto rhs = nodes[1]->codegen(tools);
-
-    std::cout << "MultiplicationNode" << std::endl;
-    return tools.builder->CreateFMul(lhs, rhs);
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
   }
 };
 
@@ -122,31 +95,21 @@ public:
     nodes.push_back(_right);
   }
 
-  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
-    assert(nodes.size() == 2 && "DivisionNode must be a binary op");
-    auto lhs = nodes[0]->codegen(tools);
-    auto rhs = nodes[1]->codegen(tools);
-
-    std::cout << "DivisionNode" << std::endl;
-    return tools.builder->CreateFDiv(lhs, rhs);
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
   }
 };
 
 class PowerNode : public Node {
+// TODO: delete
 public:
   PowerNode(Node *_base, Node *_exponent) : Node(POWER) {
     nodes.push_back(_exponent);
     nodes.push_back(_base);
   }
 
-  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
-    assert(nodes.size() == 2 && "DivisionNode must be a binary op");
-    auto lhs = nodes[0]->codegen(tools);
-    auto rhs = nodes[1]->codegen(tools);
-
-    std::cout << "PowerNode" << std::endl;
-    // TODO: return result
-    return nullptr;
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
   }
 };
 

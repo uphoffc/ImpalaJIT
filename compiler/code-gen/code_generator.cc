@@ -18,6 +18,8 @@
  */
 
 #include "engine.h"
+#include "pretty_printer.h"
+#include "codegen_visitor.h"
 #include "llvm/IR/Verifier.h"
 #include <assignment_nodes.h>
 #include <calculation_helper.hh>
@@ -60,12 +62,18 @@ dasm_gen_func CodeGenerator::generateCode(FunctionContext *&functionContext) {
 }
 
 void CodeGenerator::generateLLVMCode(FunctionContext *&functionContext, llvm::Module &module) {
+  impala::PrettyPrinter printer;
+  functionContext->root->accept(&printer);
+  std::cout << std::string(80, '+') << std::endl;
+
   auto &jit = impala::engine::Jit::getJit();
   {
     auto lock = jit.getLock();
     impala::engine::Jit::Toolbox tools = jit.createToolbox();
+
     auto function = this->genFunctionProto(functionContext, module, tools);
-    functionContext->root->codegen(tools);
+    impala::CodegenVisitor codegenVisitor(tools);
+    functionContext->root->accept(&codegenVisitor);
 
     llvm::verifyFunction(*function, &llvm::outs());
     impala::engine::Jit::printIRFunction(function);

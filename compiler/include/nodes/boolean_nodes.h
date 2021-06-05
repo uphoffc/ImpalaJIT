@@ -27,13 +27,8 @@ class BooleanAndNode : public Node {
 public:
   BooleanAndNode() : Node(BOOLEAN_AND_JUNCTION) {}
 
-  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
-    assert(nodes.size() == 2 && "BooleanAndNode must be a binary op");
-    auto lhs = nodes[0]->codegen(tools);
-    auto rhs = nodes[1]->codegen(tools);
-
-    std::cout << "BooleanAndNode" << std::endl;
-    return tools.builder->CreateAnd(lhs, rhs);
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
   }
 };
 
@@ -42,13 +37,8 @@ class BooleanOrNode : public Node {
 public:
   BooleanOrNode() : Node(BOOLEAN_OR_JUNCTION) {}
 
-  llvm::Value *codegen(impala::engine::Jit::Toolbox &tools) override {
-    assert(nodes.size() == 2 && "BooleanOrNode must be a binary op");
-    auto lhs = nodes[0]->codegen(tools);
-    auto rhs = nodes[1]->codegen(tools);
-
-    std::cout << "BooleanOrNode" << std::endl;
-    return tools.builder->CreateOr(lhs, rhs);
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
   }
 };
 
