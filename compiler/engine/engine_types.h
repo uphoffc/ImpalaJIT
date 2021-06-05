@@ -2,6 +2,7 @@
 #define IMPALA_CPP_ENGINE_TYPES_H
 
 #include "llvm/ExecutionEngine/Orc/Core.h"
+#include "llvm/IR/Function.h"
 #include <unordered_map>
 
 namespace impala {

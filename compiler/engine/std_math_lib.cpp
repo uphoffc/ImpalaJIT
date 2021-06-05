@@ -1,4 +1,5 @@
 #include "std_math_lib.h"
+#include "llvm/IR/Module.h"
 
 namespace impala {
 namespace engine {
