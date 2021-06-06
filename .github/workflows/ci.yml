@@ -20,17 +20,16 @@ jobs:
       with:
         cmake-version: '3.16.x'    
     
-    - name: Install gtest manually
+    - name: Install GTest
       run: |
         sudo apt-get install libgtest-dev && cd /usr/src/gtest && sudo cmake CMakeLists.txt && sudo make && sudo make install
 
-    - name: Install Environment
+    - name: Install LLVM 10
       run: |
         wget https://apt.llvm.org/llvm.sh
         chmod +x llvm.sh
         sudo ./llvm.sh 10
         sudo apt-get -y install zlib1g-dev
-        git clone https://github.com/google/googletest.git -b release-1.10.0
      
     - uses: actions/checkout@v2
     
