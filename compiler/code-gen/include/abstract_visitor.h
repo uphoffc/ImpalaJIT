@@ -23,30 +23,30 @@ class BooleanOrNode;
 class AssignmentNode;
 
 namespace impala {
-  class AbstractVisitor {
-  public:
-    virtual ~AbstractVisitor() = default;
-    virtual void visit(RootNode* node) = 0;
-    virtual void visit(ReturnNode* node) = 0;
-    virtual void visit(ExternalFunctionNode* node) = 0;
-    virtual void visit(ExternalFunctionParametersNode* node) = 0;
-    virtual void visit(PowerNode* node) = 0;
-    virtual void visit(DivisionNode* node) = 0;
-    virtual void visit(MultiplicationNode* node) = 0;
-    virtual void visit(SubtractionNode* node) = 0;
-    virtual void visit(AdditionNode* node) = 0;
-    virtual void visit(NegationNode* node) = 0;
-    virtual void visit(VariableNode* node) = 0;
-    virtual void visit(ConstantNode* node) = 0;
-    virtual void visit(ElseBodyNode* node) = 0;
-    virtual void visit(IfBodyNode* node) = 0;
-    virtual void visit(IfElseStmtNode* node) = 0;
-    virtual void visit(IfStmtNode* node) = 0;
-    virtual void visit(CompareNode* node) = 0;
-    virtual void visit(BooleanAndNode* node) = 0;
-    virtual void visit(BooleanOrNode* node) = 0;
-    virtual void visit(AssignmentNode* node) = 0;
-  };
-}
+class AbstractVisitor {
+public:
+  virtual ~AbstractVisitor() = default;
+  virtual void visit(RootNode *node) = 0;
+  virtual void visit(ReturnNode *node) = 0;
+  virtual void visit(ExternalFunctionNode *node) = 0;
+  virtual void visit(ExternalFunctionParametersNode *node) = 0;
+  virtual void visit(PowerNode *node) = 0;
+  virtual void visit(DivisionNode *node) = 0;
+  virtual void visit(MultiplicationNode *node) = 0;
+  virtual void visit(SubtractionNode *node) = 0;
+  virtual void visit(AdditionNode *node) = 0;
+  virtual void visit(NegationNode *node) = 0;
+  virtual void visit(VariableNode *node) = 0;
+  virtual void visit(ConstantNode *node) = 0;
+  virtual void visit(ElseBodyNode *node) = 0;
+  virtual void visit(IfBodyNode *node) = 0;
+  virtual void visit(IfElseStmtNode *node) = 0;
+  virtual void visit(IfStmtNode *node) = 0;
+  virtual void visit(CompareNode *node) = 0;
+  virtual void visit(BooleanAndNode *node) = 0;
+  virtual void visit(BooleanOrNode *node) = 0;
+  virtual void visit(AssignmentNode *node) = 0;
+};
+} // namespace impala
 
-#endif //IMPALA_CPP_ABSTRACTVISITOR_H
+#endif // IMPALA_CPP_ABSTRACTVISITOR_H

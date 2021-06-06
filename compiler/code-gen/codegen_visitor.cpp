@@ -8,7 +8,7 @@
 #include "return_nodes.h"
 
 namespace impala {
-void CodegenVisitor::visit(RootNode* node) {
+void CodegenVisitor::visit(RootNode *node) {
   for (auto statements : node->nodes) {
     statements->accept(this);
   }
@@ -192,7 +192,6 @@ void CodegenVisitor::visit(AssignmentNode *node) {
   }
   toolbox.builder->CreateStore(expr, address);
 }
-
 
 void CodegenVisitor::visit(IfStmtNode *node) {
   assert(node->nodes.size() == 2 && "IfStmtNode must have three children nodes");

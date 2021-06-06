@@ -8,7 +8,7 @@
 namespace impala {
 class CodegenVisitor : public AbstractVisitor {
 public:
-  CodegenVisitor(engine::Jit::Toolbox &tools, llvm::Type* realType) : toolbox(tools), realType(realType) {}
+  CodegenVisitor(engine::Jit::Toolbox &tools, llvm::Type *realType) : toolbox(tools), realType(realType) {}
   void visit(RootNode *node) override;
   void visit(ReturnNode *node) override;
   void visit(ExternalFunctionNode *node) override;
@@ -31,7 +31,7 @@ public:
   void visit(ElseBodyNode *node) override;
 
 private:
-  llvm::Value* top() {
+  llvm::Value *top() {
     auto topValue = stack.top();
     stack.pop();
     return topValue;
@@ -39,7 +39,7 @@ private:
 
   std::stack<llvm::Value *> stack{};
   engine::Jit::Toolbox &toolbox;
-  llvm::Type* realType{nullptr};
+  llvm::Type *realType{nullptr};
 };
 } // namespace impala
 

@@ -29,19 +29,16 @@
 #include <types.hh>
 #include <vector>
 
-
 class CodeGenerator {
 private:
-
-  static llvm::Function *genFunctionProto(FunctionContext *&functionContext,
-                                          llvm::Module &currModule,
-                                          impala::engine::Jit::Toolbox &tools,
-                                          llvm::Type* realType);
+  static llvm::Function *genFunctionProto(FunctionContext *&functionContext, llvm::Module &currModule,
+                                          impala::engine::Jit::Toolbox &tools, llvm::Type *realType);
 
 public:
   CodeGenerator() = default;
   ~CodeGenerator() = default;
 
-  static void generateLLVMCode(FunctionContext *&functionContext, llvm::Module &module, const impalajit::Options& options);
+  static void generateLLVMCode(FunctionContext *&functionContext, llvm::Module &module,
+                               const impalajit::Options &options);
 };
 #endif // IMPALAJIT_CODE_GENERATOR_HH
