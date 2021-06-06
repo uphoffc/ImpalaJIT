@@ -19,11 +19,13 @@ jobs:
 
     - name: Install Environment
       run: |
-        sudo add-apt-repository 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main'
+        sudo apt-get install -y gnupg1 gnupg2 wget
+        wget -qO - http://deb.opera.com/archive.key | sudo apt-key add -
+        sudo echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main" >> /etc/apt/sources.list
+        sudo echo "deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main" >> /etc/apt/sources.list
         sudo apt-get update --allow-insecure-repositories
-        sudo apt-get install -y libgtest-dev
+        sudo apt-get -y install llvm-10* zlib1g-dev libgtest-dev 
         $(cd /usr/src/gtest && sudo cmake CMakeLists.txt && sudo make && sudo make install)
-        sudo apt install zlib1g-dev
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
