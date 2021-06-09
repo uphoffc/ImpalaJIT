@@ -8,7 +8,7 @@ A lightweight JIT compiler for flexible data access in simulation applications
 ### Building
 1. mkdir build
 2. cd build
-3. cmake .. -DCMAKE_INSTALL_PREFIX=<path>
+3. cmake .. -DCMAKE_INSTALL_PREFIX=\<path\>
 4. make -j
 
 ### Installing
