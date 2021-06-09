@@ -1,17 +1,20 @@
 # ImpalaJIT
 A lightweight JIT compiler for flexible data access in simulation applications
 
-## Depencencies
+### Dependencies
 * LLVM - build
 * Z3 - run-time
 
-## Building ImpalaJIT
+### Building
 1. mkdir build
 2. cd build
-3. cmake ../
-4. make
+3. cmake .. -DCMAKE_INSTALL_PREFIX=<path>
+4. make -j
 
-## Generating Parser, Scanner and ASM
+### Installing
+* make install
+
+### Generating Parser, Scanner and ASM
 This step is only necessary if you have modified one of the following files: <br />
 [parser.yy](compiler/parser.yy) <br />
 [scanner.ll](compiler/scanner.ll) <br />
@@ -22,11 +25,5 @@ Flex (Tested with version 2.6.0): https://github.com/westes/flex <br />
 
 * make generate
 
-## Installing ImpalaJIT
-* make install
-
-## Uninstalling ImpalaJIT
-* make uninstall
-
-## License
+### License
 ImpalaJIT is release under the MIT License (see [COPYING](COPYING))
