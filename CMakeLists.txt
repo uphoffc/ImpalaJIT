@@ -17,113 +17,95 @@
 
 
 cmake_minimum_required(VERSION 2.6)
-
-option( SHARED_LIB "Compile the shared library" OFF )
-option( STATIC_LIB "Compile the static library" ON )
-option( TESTS "Enable Tests" OFF )
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -O3")
-
 project(ImpalaJIT)
 
-set(include_dirs
-        include
-        include/impalajit
-        compiler/include
-        compiler/include/nodes
-        compiler/include/types
-        compiler/frontend/include
-        compiler/semantic_analysis/include
-        compiler/code-gen/include
-        compiler/engine)
+option(SHARED_LIB "Compile the shared library" ON)
+option(TESTS "Enable Tests" OFF)
 
-include_directories(${include_dirs})
+set(source_files compiler/frontend/parser.cc
+                 compiler/frontend/scanner.cc
+                 compiler/driver.cc
+                 compiler/function_context.cc
+                 compiler/include/nodes/node.h
+                 impalajit.cc
+                 compiler/semantic_analysis/semantic_analyzer.cc
+                 compiler/code-gen/code_generator.cpp
+                 compiler/code-gen/codegen_visitor.cpp
+                 compiler/code-gen/pretty_printer.cpp
+                 compiler/engine/engine.cpp
+                 compiler/engine/std_math_lib.cpp)
 
-
-set(source_files ${source_files}
-        compiler/frontend/parser.cc
-        compiler/frontend/scanner.cc
-        compiler/driver.cc
-        compiler/function_context.cc
-        compiler/include/nodes/node.h
-        impalajit.cc
-        compiler/include/nodes/expression_nodes.h
-        compiler/include/nodes/compare_nodes.h
-        compiler/include/nodes/conditional_nodes.h
-        compiler/include/nodes/boolean_nodes.h
-        compiler/include/nodes/assignment_nodes.h
-        compiler/semantic_analysis/semantic_analyzer.cc
-        compiler/code-gen/code_generator.cpp
-        compiler/code-gen/codegen_visitor.cpp
-        compiler/code-gen/pretty_printer.cpp
-        compiler/engine/engine.cpp
-        compiler/engine/std_math_lib.cpp)
-
-##### pkg-config #####
-find_package( PkgConfig )
-if( PKG_CONFIG_FOUND )
-    # Detect private libs and directories
-
-    set( _PKG_CONFIG_PROJECT_NAME ${PROJECT_NAME} )
-    set( _PKG_CONFIG_DESCRIPTION "JIT Compilation to realize flexible data access" )
-    set( _PKG_CONFIG_URL "https://github.com/Manuel1605/ImpalaJIT" )
-    set( _PKG_CONFIG_VERSION "0.9" )
-
-    set( _PKG_CONFIG_PREFIX ${CMAKE_INSTALL_PREFIX} )
-    set( _PKG_CONFIG_LIBDIR "\${prefix}/lib" )
-    set( _PKG_CONFIG_INCLUDEDIR "\${prefix}/include" )
-
-    set( _PKG_CONFIG_LIBS "${CMAKE_LIBRARY_PATH_FLAG}\${libdir} ${CMAKE_LINK_LIBRARY_FLAG}impalajit" )
-
-    set( _PKG_CONFIG_LIBS_PRIVATE  "${_PKG_CONFIG_LIBDIRS_PRIVATE} ${_PKG_CONFIG_LIBS_PRIVATE}" )
-    set( _PKG_CONFIG_CFLAGS "-I\${includedir}" )
-
-    # Where to install the pkg-config file?
-    set( _PKG_CONFIG_DIR ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig )
-
-    # Configure the pkgconfig file
-    configure_file( CMake/pkg-config.pc.in impalajit.pc )
-
-    # Install the pkg file
-    install( FILES ${CMAKE_CURRENT_BINARY_DIR}/impalajit.pc	DESTINATION lib/pkgconfig )
-endif( PKG_CONFIG_FOUND )
 
 find_package(LLVM 10.0 REQUIRED CONFIG)
 LLVM_MAP_COMPONENTS_TO_LIBNAMES(LLVM_LIBS core orcjit native)
 message(STATUS "LLVM: ${LLVM_VERSION}")
 
 
-if( SHARED_LIB )
-    set(TARGET_NAME impalajit)
-    add_library( ${TARGET_NAME} SHARED ${source_files} )
-endif( SHARED_LIB )
+if(SHARED_LIB)
+    add_library(impalajit SHARED ${source_files})
+else()
+    add_library(impalajit STATIC ${source_files})
+endif()
 
-if( STATIC_LIB )
-    set(TARGET_NAME impalajit-static)
-    add_library( ${TARGET_NAME} STATIC ${source_files} )
-    set_target_properties( ${TARGET_NAME} PROPERTIES OUTPUT_NAME impalajit )
-endif( STATIC_LIB )
+target_include_directories(impalajit PRIVATE include
+                                             include/impalajit
+                                             compiler/include
+                                             compiler/include/nodes
+                                             compiler/include/types
+                                             compiler/frontend/include
+                                             compiler/semantic_analysis/include
+                                             compiler/code-gen/include
+                                             compiler/engine)
 
-target_link_libraries( ${TARGET_NAME} PUBLIC -rdynamic -lm ${math_library} ${LLVM_LIBS})
-target_include_directories( ${TARGET_NAME} PRIVATE ${LLVM_INCLUDE_DIRS} )
-target_compile_definitions( ${TARGET_NAME} PRIVATE ${LLVM_DEFINITIONS} )
 
-# Tests
+target_compile_options(impalajit PRIVATE -std=c++14 -O3 -fPIC)
+target_link_libraries(impalajit PUBLIC -rdynamic -lm)
+
+# assume that llvm components are given as static libraries
+target_link_libraries(impalajit PRIVATE ${LLVM_LIBS})
+target_include_directories(impalajit PRIVATE ${LLVM_INCLUDE_DIRS})
+target_compile_definitions(impalajit PUBLIC ${LLVM_DEFINITIONS})
+
+
 if (TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
 
+set(IMPALA_CMAKE_FILES lib/impalajit/cmake)
+install(TARGETS impalajit DESTINATION lib
+        EXPORT ImpalaJITTargets
+        INCLUDES DESTINATION include)
+install(EXPORT ImpalaJITTargets DESTINATION ${IMPALA_CMAKE_FILES})
 
-# install target
-install( TARGETS ${TARGET_NAME} DESTINATION lib )
-install( FILES include/impalajit.hh
-         DESTINATION include )
-install( FILES include/impalajit.f90
-        DESTINATION include )
-install( FILES include/impalajit/types.hh
-         DESTINATION include/impalajit )
+install(FILES
+        include/impalajit.hh
+        include/impalajit.f90
+        DESTINATION
+        include)
 
+install(FILES
+        include/impalajit/types.hh
+        DESTINATION
+        include/impalajit)
+
+install(FILES
+        DESTINATION
+        lib/cmake)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(share/ImpalaJITConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/ImpalaJITConfig.cmake
+        INSTALL_DESTINATION ${IMPALA_CMAKE_FILES})
+
+write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/ImpalaJITConfigVersion.cmake
+        VERSION 1.0.0
+        COMPATIBILITY SameMajorVersion)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ImpalaJITConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/ImpalaJITConfigVersion.cmake
+        DESTINATION ${IMPALA_CMAKE_FILES})
 
 
 # uninstall target
@@ -131,6 +113,7 @@ configure_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
         "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
         IMMEDIATE @ONLY)
+
 add_custom_target(uninstall
         COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
@@ -139,5 +122,3 @@ add_custom_target(uninstall
 add_custom_target(generate
         COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/generate.cmake
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-
-

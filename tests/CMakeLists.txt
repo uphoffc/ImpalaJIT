@@ -8,7 +8,7 @@ add_executable(basic_tests ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
                            ${CMAKE_CURRENT_SOURCE_DIR}/parameter_count.cpp
                            ${CMAKE_CURRENT_SOURCE_DIR}/simple_conditionals.cpp)
 target_include_directories(basic_tests PRIVATE ${GTEST_INCLUDE_DIRS} ../include)
-target_link_libraries(basic_tests PRIVATE ${TARGET_NAME} ${GTEST_LIBRARIES})
+target_link_libraries(basic_tests PRIVATE impalajit ${GTEST_LIBRARIES})
 
 
 add_executable(advanced_tests ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
@@ -16,7 +16,7 @@ add_executable(advanced_tests ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
                               #${CMAKE_CURRENT_SOURCE_DIR}/many_ifs.cpp
                               ${CMAKE_CURRENT_SOURCE_DIR}/multiple_functions.cpp)
 target_include_directories(advanced_tests PRIVATE ${GTEST_INCLUDE_DIRS} ../include)
-target_link_libraries(advanced_tests PRIVATE ${TARGET_NAME} ${GTEST_LIBRARIES})
+target_link_libraries(advanced_tests PRIVATE impalajit ${GTEST_LIBRARIES})
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/impala_files DESTINATION .)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/conf DESTINATION .)

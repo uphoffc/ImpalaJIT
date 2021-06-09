@@ -1,6 +1,10 @@
 # ImpalaJIT
 A lightweight JIT compiler for flexible data access in simulation applications
 
+## Depencencies
+* LLVM - build
+* Z3 - run-time
+
 ## Building ImpalaJIT
 1. mkdir build
 2. cd build
