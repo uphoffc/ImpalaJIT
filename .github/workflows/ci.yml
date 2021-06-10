@@ -8,8 +8,10 @@ env:
 jobs:
   testing:
     runs-on: ubuntu-18.04
-    env:
-      LLVM_VERSION: 10
+    strategy:
+      matrix:
+        llvm_version: [10, 11]
+
     steps:
     - name: Setup CMake
       uses: jwlawson/actions-setup-cmake@v1.9
@@ -24,11 +26,11 @@ jobs:
         sudo make 
         sudo make install
 
-    - name: Install LLVM ${{env.LLVM_VERSION}}
+    - name: Install LLVM ${{ matrix.llvm_version }}
       run: |
         wget https://apt.llvm.org/llvm.sh
         chmod +x llvm.sh
-        sudo ./llvm.sh ${{env.LLVM_VERSION}}
+        sudo ./llvm.sh ${{ matrix.llvm_version }}
         sudo apt-get -y install zlib1g-dev
      
     - uses: actions/checkout@v2
@@ -37,7 +39,7 @@ jobs:
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DTESTS=ON
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j2
 
     - name: Test
       working-directory: ${{github.workspace}}/build

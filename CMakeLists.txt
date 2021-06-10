@@ -35,8 +35,15 @@ set(source_files compiler/frontend/parser.cc
                  compiler/engine/engine.cpp
                  compiler/engine/std_math_lib.cpp)
 
+# Note: this is due to an old cmake style. One can use a version range starting from cmake@3.19
+find_package(LLVM 11.1 QUIET)
+if (NOT LLVM_FOUND)
+    find_package(LLVM 11.0 QUIET)
+endif()
+if (NOT LLVM_FOUND)
+    find_package(LLVM 10.0 REQUIRED)
+endif()
 
-find_package(LLVM 10.0 REQUIRED CONFIG)
 LLVM_MAP_COMPONENTS_TO_LIBNAMES(LLVM_LIBS core orcjit native)
 message(STATUS "LLVM: ${LLVM_VERSION}")
 

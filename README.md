@@ -11,6 +11,10 @@ A lightweight JIT compiler for flexible data access in simulation applications
 3. cmake .. -DCMAKE_INSTALL_PREFIX=\<path\>
 4. make -j
 
+## Installing ImpalaJIT
+* make install
+
+
 ### Installing
 * make install
 

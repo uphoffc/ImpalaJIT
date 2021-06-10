@@ -209,7 +209,7 @@ void CodegenVisitor::visit(IfStmtNode *node) {
   toolbox.builder->SetInsertPoint(thenBlock);
   node->nodes[1]->accept(this);
   auto &lastInstr = toolbox.builder->GetInsertBlock()->back();
-  if (!llvm::isa<llvm::ResumeInst>(lastInstr)) {
+  if (!llvm::isa<llvm::ReturnInst>(lastInstr)) {
     toolbox.builder->CreateBr(mergeBlock);
   }
 
@@ -258,7 +258,7 @@ void CodegenVisitor::visit(IfBodyNode *node) {
   for (auto child : node->nodes) {
     child->accept(this);
     auto &lastInstruction = toolbox.builder->GetInsertBlock()->back();
-    if (llvm::isa<llvm::ResumeInst>(lastInstruction)) {
+    if (llvm::isa<llvm::ReturnInst>(lastInstruction)) {
       // a return instruction found. Doesn't make sense to generate the rest of the instructions
       break;
     }
@@ -271,7 +271,7 @@ void CodegenVisitor::visit(ElseBodyNode *node) {
   for (auto child : node->nodes) {
     child->accept(this);
     auto &lastInstruction = toolbox.builder->GetInsertBlock()->back();
-    if (llvm::isa<llvm::ResumeInst>(lastInstruction)) {
+    if (llvm::isa<llvm::ReturnInst>(lastInstruction)) {
       // a return instruction found. Doesn't make sense to generate the rest of the instructions
       break;
     }

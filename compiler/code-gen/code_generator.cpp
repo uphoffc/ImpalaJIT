@@ -42,6 +42,7 @@ void CodeGenerator::generateLLVMCode(FunctionContext *&functionContext, llvm::Mo
     auto function = CodeGenerator::genFunctionProto(functionContext, module, tools, realType);
     impala::CodegenVisitor codegenVisitor(tools, realType);
     functionContext->root->accept(&codegenVisitor);
+    checkLastBasicBlock(function);
 
     llvm::verifyFunction(*function, &llvm::outs());
     if (options.printIR) {
@@ -89,4 +90,12 @@ llvm::Function *CodeGenerator::genFunctionProto(FunctionContext *&functionContex
   }
 
   return function;
+}
+
+void CodeGenerator::checkLastBasicBlock(llvm::Function *function) {
+  auto &lastBasicBlock = function->getBasicBlockList().back();
+  if (lastBasicBlock.empty()) {
+    impala::engine::Jit::printIRFunction(function);
+    throw std::runtime_error("impala: the last basic block is empty. Probably a forgotten return statement");
+  }
 }

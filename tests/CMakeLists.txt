@@ -13,7 +13,7 @@ target_link_libraries(basic_tests PRIVATE impalajit ${GTEST_LIBRARIES})
 
 add_executable(advanced_tests ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
                               ${CMAKE_CURRENT_SOURCE_DIR}/complex_conditionals.cpp
-                              #${CMAKE_CURRENT_SOURCE_DIR}/many_ifs.cpp
+                              ${CMAKE_CURRENT_SOURCE_DIR}/many_ifs.cpp
                               ${CMAKE_CURRENT_SOURCE_DIR}/multiple_functions.cpp)
 target_include_directories(advanced_tests PRIVATE ${GTEST_INCLUDE_DIRS} ../include)
 target_link_libraries(advanced_tests PRIVATE impalajit ${GTEST_LIBRARIES})
