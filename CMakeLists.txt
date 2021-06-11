@@ -71,7 +71,7 @@ target_link_libraries(impalajit PUBLIC -rdynamic -lm)
 # assume that llvm components are given as static libraries
 target_link_libraries(impalajit PRIVATE ${LLVM_LIBS})
 target_include_directories(impalajit PRIVATE ${LLVM_INCLUDE_DIRS})
-target_compile_definitions(impalajit PUBLIC ${LLVM_DEFINITIONS})
+target_compile_definitions(impalajit PRIVATE ${LLVM_DEFINITIONS})
 
 
 if (TESTS)
