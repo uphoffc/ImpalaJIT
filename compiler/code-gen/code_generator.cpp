@@ -39,7 +39,7 @@ void CodeGenerator::generateLLVMCode(FunctionContext *&functionContext, llvm::Mo
     llvm::Type *realType =
         (options.isDoublePrecision) ? llvm::Type::getDoubleTy(tools.context) : llvm::Type::getFloatTy(tools.context);
 
-    auto function = CodeGenerator::genFunctionProto(functionContext, module, tools, realType);
+    auto function = CodeGenerator::genFunctionProto(functionContext, module, tools, realType, options);
     impala::CodegenVisitor codegenVisitor(tools, realType);
     functionContext->root->accept(&codegenVisitor);
     checkLastBasicBlock(function);
@@ -52,7 +52,8 @@ void CodeGenerator::generateLLVMCode(FunctionContext *&functionContext, llvm::Mo
 }
 
 llvm::Function *CodeGenerator::genFunctionProto(FunctionContext *&functionContext, llvm::Module &currModule,
-                                                impala::engine::Jit::Toolbox &tools, llvm::Type *realType) {
+                                                impala::engine::Jit::Toolbox &tools, llvm::Type *realType,
+                                                const impalajit::Options &options) {
 
   const auto numParams = functionContext->parameters.size();
   std::vector<llvm::Type *> paramTypes(numParams, realType);
@@ -73,8 +74,9 @@ llvm::Function *CodeGenerator::genFunctionProto(FunctionContext *&functionContex
     }
   }
 
-  auto function =
-      llvm::Function::Create(functionProto, llvm::Function::ExternalLinkage, functionContext->name, currModule);
+  auto linkageType = (options.weakLinkage) ? llvm::Function::WeakAnyLinkage : llvm::Function::ExternalLinkage;
+
+  auto function = llvm::Function::Create(functionProto, linkageType, functionContext->name, currModule);
 
   auto entryBlock = llvm::BasicBlock::Create(tools.context, "entry", function);
   tools.builder->SetInsertPoint(entryBlock);

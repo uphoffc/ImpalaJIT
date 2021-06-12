@@ -32,7 +32,8 @@
 class CodeGenerator {
 private:
   static llvm::Function *genFunctionProto(FunctionContext *&functionContext, llvm::Module &currModule,
-                                          impala::engine::Jit::Toolbox &tools, llvm::Type *realType);
+                                          impala::engine::Jit::Toolbox &tools, llvm::Type *realType,
+                                          const impalajit::Options &options);
 
   static void checkLastBasicBlock(llvm::Function *function);
 

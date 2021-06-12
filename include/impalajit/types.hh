@@ -24,11 +24,12 @@ typedef double (*dasm_gen_func)(...);
 
 namespace impalajit {
 struct Options {
-  Options() : debug(false), printAST(false), printIR(false), isDoublePrecision(true) {}
+  Options() : debug(false), printAST(false), printIR(false), isDoublePrecision(true), weakLinkage(true) {}
   bool debug;
   bool printAST;
   bool printIR;
   bool isDoublePrecision;
+  bool weakLinkage;
 };
 }
 
