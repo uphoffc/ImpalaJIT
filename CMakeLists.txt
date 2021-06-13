@@ -33,6 +33,7 @@ set(source_files compiler/frontend/parser.cc
                  compiler/code-gen/codegen_visitor.cpp
                  compiler/code-gen/pretty_printer.cpp
                  compiler/engine/engine.cpp
+                 compiler/engine/optimizer.cpp
                  compiler/engine/std_math_lib.cpp)
 
 # Note: this is due to an old cmake style. One can use a version range starting from cmake@3.19

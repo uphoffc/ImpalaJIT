@@ -83,7 +83,7 @@ void impalajit::Compiler::compile(Options options) {
     functionSignature.emplace_back(driver.generateLLVMFunction(definition, *currentModule, options));
     driver.deleteFunctionContext();
   }
-  jit.addModule(currentModule);
+  jit.addModule(currentModule, !options.debug);
 
   for (auto& signature: functionSignature) {
     auto function = reinterpret_cast<dasm_gen_func>(jit.lookup(signature.first).getAddress());

@@ -2,6 +2,7 @@
 #define IMPALA_CPP_ENGINE_H
 
 #include "engine_types.h"
+#include "optimizer.h"
 #include "symbol_table.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ExecutionEngine/JITSymbol.h"
@@ -24,11 +25,13 @@
  * ExecutionSession - provides context for our running JIT’d code (including the string pool,
  * global mutex, and error reporting facilities)
  *
- * RTDyldObjectLinkingLayer - can be used to add object files to our JIT
+ * RTDyldObjectLinkingLayer - linker layer
  *
- * IRCompileLayer - can be used to add LLVM Modules to our JIT (builds on the ObjectLayer)
+ * IRCompileLayer - compiler layer
  *
- * DataLayout and MangleAndInterner - used for symbol mangling
+ * DataLayout - specifies how data is to be laid out in memory
+ *
+ * MangleAndInterner - for symbol mangling
  *
  * LLVMContext - llvm core
  *
@@ -36,9 +39,7 @@
  * return std::make_unique<llvm::SectionMemoryManager>() - builds a JIT memory manager
  * for each module that is added
  *
- * ConcurrentIRCompiler - used the JITTargetMachineBuilder to build llvm TargetMachines
- *
- * JITDylib - A symbol table that supports asynchoronous symbol queries
+ * JITDylib - a symbol table that supports asynchoronous symbol queries
  * */
 namespace impala {
 namespace engine {
@@ -64,7 +65,7 @@ public:
   llvm::orc::ThreadSafeContext::Lock getLock() { return context->getLock(); }
 
   // adds IR to the JIT and making it available for execution
-  void addModule(std::unique_ptr<llvm::Module> &module);
+  void addModule(std::unique_ptr<llvm::Module> &module, bool optimize);
 
   // looks up addresses for function and variable definitions added to the JIT based on their symbol names.
   llvm::JITEvaluatedSymbol lookup(llvm::StringRef Name);
@@ -81,6 +82,7 @@ public:
 
 private:
   Jit();
+
   llvm::orc::ExecutionSession ES;
   std::unique_ptr<llvm::orc::RTDyldObjectLinkingLayer> objectLayer{nullptr};
   std::unique_ptr<llvm::orc::IRCompileLayer> compileLayer{nullptr};
@@ -90,6 +92,7 @@ private:
   std::unique_ptr<llvm::orc::MangleAndInterner> mangle{nullptr};
   std::unique_ptr<llvm::orc::ThreadSafeContext> context{nullptr};
   types::FunctionProtosT externalMathFunctions;
+  Optimizer optimizer;
 }; // namespace Jit
 } // namespace engine
 } // namespace impala

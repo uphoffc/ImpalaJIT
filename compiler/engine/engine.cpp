@@ -58,7 +58,10 @@ Jit::Jit() {
   }
 }
 
-void Jit::addModule(std::unique_ptr<llvm::Module> &module) {
+void Jit::addModule(std::unique_ptr<llvm::Module> &module, bool optimize) {
+  if (optimize) {
+    optimizer.run(*module);
+  }
   llvm::cantFail(compileLayer->add(*jitDylib, llvm::orc::ThreadSafeModule(std::move(module), *context)));
 }
 
