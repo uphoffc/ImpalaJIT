@@ -1,6 +1,12 @@
 #include "optimizer.h"
 #include <iostream>
 
+#include "llvm/Transforms/InstCombine/InstCombine.h"
+#include "llvm/Transforms/Scalar/InstSimplifyPass.h"
+#include "llvm/Transforms/Scalar/NewGVN.h"
+#include "llvm/Transforms/Scalar/Reassociate.h"
+#include "llvm/Transforms/Scalar/SimplifyCFG.h"
+
 namespace impala {
 namespace engine {
 Optimizer::Optimizer() {
@@ -12,7 +18,13 @@ Optimizer::Optimizer() {
   passBuilder.crossRegisterProxies(loopAnalysisManager, functionAnalysisManager, cGSCCAnalysisManager,
                                    moduleAnalysisManager);
 
-  modulePassManager = passBuilder.buildPerModuleDefaultPipeline(llvm::PassBuilder::OptimizationLevel::O1, false);
+  llvm::FunctionPassManager functionPassManager;
+  functionPassManager.addPass(llvm::InstCombinePass());
+  functionPassManager.addPass(llvm::NewGVNPass());
+  functionPassManager.addPass(llvm::InstSimplifyPass());
+  functionPassManager.addPass(llvm::SimplifyCFGPass());
+
+  modulePassManager.addPass(llvm::createModuleToFunctionPassAdaptor(std::move(functionPassManager)));
 }
 
 void Optimizer::run(llvm::Module &module) { modulePassManager.run(module, moduleAnalysisManager); }
