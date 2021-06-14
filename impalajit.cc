@@ -76,6 +76,8 @@ void impalajit::Compiler::loadFunctionDefinitionsFromInputFiles(std::string _con
 }
 
 void impalajit::Compiler::compile(Options options) {
+  assert(options.isDoublePrecision && "impala: single precision support has not been fully implemented. Please, use double precision");
+
   auto& jit = impala::engine::Jit::getJit();
   auto currentModule = jit.createModule(options.isDoublePrecision);
   std::vector<FunctionContext::FunctionSinatureT> functionSignature;
