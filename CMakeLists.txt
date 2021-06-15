@@ -84,7 +84,10 @@ set(IMPALA_CMAKE_FILES lib/impalajit/cmake)
 install(TARGETS impalajit DESTINATION lib
         EXPORT ImpalaJITTargets
         INCLUDES DESTINATION include)
-install(EXPORT ImpalaJITTargets DESTINATION ${IMPALA_CMAKE_FILES})
+
+install(EXPORT ImpalaJITTargets
+        NAMESPACE LLVM::
+        DESTINATION ${IMPALA_CMAKE_FILES})
 
 install(FILES
         include/impalajit.hh
