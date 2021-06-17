@@ -80,13 +80,13 @@ if (TESTS)
     add_subdirectory(tests)
 endif()
 
-set(IMPALA_CMAKE_FILES lib/impalajit/cmake)
+set(IMPALA_CMAKE_FILES lib/cmake/impalajit-llvm)
 install(TARGETS impalajit DESTINATION lib
-        EXPORT ImpalaJITTargets
+        EXPORT ImpalaJIT-LLVMTargets
         INCLUDES DESTINATION include)
 
-install(EXPORT ImpalaJITTargets
-        NAMESPACE LLVM::
+install(EXPORT ImpalaJIT-LLVMTargets
+        NAMESPACE llvm::
         DESTINATION ${IMPALA_CMAKE_FILES})
 
 install(FILES
@@ -100,22 +100,18 @@ install(FILES
         DESTINATION
         include/impalajit)
 
-install(FILES
-        DESTINATION
-        lib/cmake)
-
 include(CMakePackageConfigHelpers)
 configure_package_config_file(share/ImpalaJITConfig.cmake.in
-        ${CMAKE_CURRENT_BINARY_DIR}/ImpalaJITConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/ImpalaJIT-LLVMConfig.cmake
         INSTALL_DESTINATION ${IMPALA_CMAKE_FILES})
 
 write_basic_package_version_file(
-        ${CMAKE_CURRENT_BINARY_DIR}/ImpalaJITConfigVersion.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/ImpalaJIT-LLVMConfigVersion.cmake
         VERSION 1.0.0
         COMPATIBILITY SameMajorVersion)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ImpalaJITConfig.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/ImpalaJITConfigVersion.cmake
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ImpalaJIT-LLVMConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/ImpalaJIT-LLVMConfigVersion.cmake
         DESTINATION ${IMPALA_CMAKE_FILES})
 
 

@@ -1,5 +1,6 @@
 # - Config file for the ImpalaJIT package
 # - Using imported targets
 
-get_filename_component(IMPALAJIT_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-include("${IMPALAJIT_DIR}/ImpalaJITTargets.cmake")
+get_filename_component(IMPALAJIT-LLVM_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+message(STATUS "Found ImpalaJIT-LLVM: ${IMPALAJIT-LLVM_DIR} (version ${ImpalaJIT-LLVM_VERSION})")
+include("${IMPALAJIT-LLVM_DIR}/ImpalaJIT-LLVMTargets.cmake")
