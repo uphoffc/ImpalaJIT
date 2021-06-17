@@ -22,88 +22,95 @@
 
 #include <node.h>
 
-class ConstantNode : public Node
-{
+class ConstantNode : public Node {
 public:
-    double value;
-    explicit ConstantNode(double _value)
-            : Node(CONSTANT), value(_value)
-    {
-    }
+  double value;
+  explicit ConstantNode(double _value) : Node(CONSTANT), value(_value) {}
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
 class VariableNode : public Node {
 
 public:
-    std::string &name;
-    VariableNode(std::string &_name)
-            : Node(VARIABLE), name(_name) {
-    }
+  std::string &name;
+  VariableNode(std::string &_name) : Node(VARIABLE), name(_name) {}
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
-class NegationNode : public Node
-{
+class NegationNode : public Node {
 public:
-    NegationNode(Node* _node)
-            : Node(NEGATION)
-    {
-        nodes.push_back(_node);
-    }
+  NegationNode(Node *_node) : Node(NEGATION) { nodes.push_back(_node); }
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
-class AdditionNode : public Node
-{
+class AdditionNode : public Node {
 public:
-    AdditionNode(Node* _left, Node* _right)
-            : Node(ADDITION)
-    {
-        nodes.push_back(_left);
-        nodes.push_back(_right);
-    }
+  AdditionNode(Node *_left, Node *_right) : Node(ADDITION) {
+    nodes.push_back(_left);
+    nodes.push_back(_right);
+  }
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
-class SubtractionNode : public Node
-{
+class SubtractionNode : public Node {
 public:
-    SubtractionNode(Node* _left, Node* _right)
-            : Node(SUBTRACTION)
-    {
-        nodes.push_back(_left);
-        nodes.push_back(_right);
-    }
+  SubtractionNode(Node *_left, Node *_right) : Node(SUBTRACTION) {
+    nodes.push_back(_left);
+    nodes.push_back(_right);
+  }
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
-class MultiplicationNode : public Node
-{
+class MultiplicationNode : public Node {
 public:
-    MultiplicationNode(Node* _left, Node* _right)
-            : Node(MULTIPLICATION)
-    {
-        nodes.push_back(_left);
-        nodes.push_back(_right);
-    }
+  MultiplicationNode(Node *_left, Node *_right) : Node(MULTIPLICATION) {
+    nodes.push_back(_left);
+    nodes.push_back(_right);
+  }
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
-class DivisionNode : public Node
-{
+class DivisionNode : public Node {
 public:
-    DivisionNode(Node* &_left, Node* &_right)
-            : Node(DIVISION)
-    {
-        nodes.push_back(_left);
-        nodes.push_back(_right);
-    }
+  DivisionNode(Node *&_left, Node *&_right) : Node(DIVISION) {
+    nodes.push_back(_left);
+    nodes.push_back(_right);
+  }
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
-class PowerNode : public Node
-{
+class PowerNode : public Node {
+// TODO: delete
 public:
-    PowerNode(Node* _base, Node* _exponent)
-            : Node(POWER)
-    {
-        nodes.push_back(_exponent);
-        nodes.push_back(_base);
-    }
+  PowerNode(Node *_base, Node *_exponent) : Node(POWER) {
+    nodes.push_back(_exponent);
+    nodes.push_back(_base);
+  }
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
-#endif //IMPALAJIT_BASIC_EXPRESSION_H_HH
+#endif // IMPALAJIT_BASIC_EXPRESSION_H_HH

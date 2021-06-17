@@ -25,20 +25,21 @@
 class BooleanAndNode : public Node {
 
 public:
-    BooleanAndNode()
-    : Node(BOOLEAN_AND_JUNCTION)
-    {
-    }
-};
+  BooleanAndNode() : Node(BOOLEAN_AND_JUNCTION) {}
 
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
+};
 
 class BooleanOrNode : public Node {
 
 public:
-    BooleanOrNode()
-            : Node(BOOLEAN_OR_JUNCTION)
-    {
-    }
+  BooleanOrNode() : Node(BOOLEAN_OR_JUNCTION) {}
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
-#endif //IMPALAJIT_BOOL_H
+#endif // IMPALAJIT_BOOL_H

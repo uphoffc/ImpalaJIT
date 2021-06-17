@@ -22,13 +22,12 @@
 
 #include <node.h>
 
-class ReturnNode : public Node
-{
+class ReturnNode : public Node {
 public:
-    ReturnNode(Node* _node)
-            : Node(RETURN)
-    {
-        nodes.push_back(_node);
-    }
+  ReturnNode(Node *_node) : Node(RETURN) { nodes.push_back(_node); }
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
-#endif //IMPALAJIT_RETURN_NODE_H
+#endif // IMPALAJIT_RETURN_NODE_H

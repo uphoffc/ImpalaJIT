@@ -22,53 +22,50 @@
 
 #include <node.h>
 
-class IfStmtNode : public Node
-{
+class IfStmtNode : public Node {
 public:
-    IfStmtNode(Node* _condition, Node* _if_body)
-            : Node(IF_STATEMENT)
-    {
-        nodes.push_back(_condition);
-        nodes.push_back(_if_body);
-    }
+  IfStmtNode(Node *_condition, Node *_if_body) : Node(IF_STATEMENT) {
+    nodes.push_back(_condition);
+    nodes.push_back(_if_body);
+  }
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
-class IfElseStmtNode : public Node
-{
+class IfElseStmtNode : public Node {
 public:
+  IfElseStmtNode(Node *_condition, Node *_if_body, Node *_else_body) : Node(IF_ELSE_STATEMENT) {
+    nodes.push_back(_condition);
+    nodes.push_back(_if_body);
+    nodes.push_back(_else_body);
+  }
 
-    IfElseStmtNode(Node* _condition, Node* _if_body, Node* _else_body)
-            : Node(IF_ELSE_STATEMENT)
-    {
-        nodes.push_back(_condition);
-        nodes.push_back(_if_body);
-        nodes.push_back(_else_body);
-    }
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
-class IfBodyNode : public Node
-{
+class IfBodyNode : public Node {
 public:
-    IfBodyNode()
-            : Node(IF_BODY)
-    {
-    }
+  IfBodyNode() : Node(IF_BODY) {}
 
-    virtual ~IfBodyNode()
-    {
-    }
+  virtual ~IfBodyNode() {}
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
-class ElseBodyNode : public Node
-{
+class ElseBodyNode : public Node {
 public:
-    ElseBodyNode()
-            : Node(ELSE_BODY)
-    {
-    }
+  ElseBodyNode() : Node(ELSE_BODY) {}
 
-    virtual ~ElseBodyNode()
-    {
-    }
+  virtual ~ElseBodyNode() {}
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
-#endif //IMPALAJIT_COMPLEX_EXPRESSION_H
+#endif // IMPALAJIT_COMPLEX_EXPRESSION_H

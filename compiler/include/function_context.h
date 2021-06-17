@@ -19,34 +19,35 @@
 #ifndef IMPALAJIT_FUNCTION_CONTEXT_HH
 #define IMPALAJIT_FUNCTION_CONTEXT_HH
 
-#include <vector>
-#include <node.h>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
+#include <node.h>
+#include <vector>
 
 class FunctionContext {
 
 public:
-    std::vector<std::string> parameters;
-    std::vector<std::string> variables;
-    Node* root;
-    std::string name;
+  using FunctionSinatureT = std::pair<std::string, unsigned>;
 
-    FunctionContext(std::string &_name, std::vector<std::string> &_parameters, Node* &_root);
+  std::vector<std::string> parameters;
+  std::vector<std::string> variables;
+  Node *root;
+  std::string name;
 
-    ~FunctionContext();
+  FunctionContext(std::string &_name, std::vector<std::string> &_parameters, Node *&_root);
 
-    bool containsParameter(std::string& name);
+  ~FunctionContext();
 
-    bool containsVariable(std::string& name);
+  bool containsParameter(std::string &name);
 
-    int getIndexOfParameter(std::string& name);
+  bool containsVariable(std::string &name);
 
-    int getIndexOfVariable(std::string &name);
+  int getIndexOfParameter(std::string &name);
 
-    unsigned int getParameterCount();
+  int getIndexOfVariable(std::string &name);
 
-    void clear();
+  unsigned int getParameterCount();
 
+  void clear();
 };
-#endif //IMPALAJIT_FUNCTION_CONTEXT_HH
+#endif // IMPALAJIT_FUNCTION_CONTEXT_HH

@@ -22,23 +22,15 @@
 
 #include <node.h>
 
-class AssignmentNode : public Node
-{
+class AssignmentNode : public Node {
 public:
-    std::string &name;
-    AssignmentNode(std::string &_name, Node* _node)
-            : name(_name), Node(ASSIGNMENT)
-    {
-        nodes.push_back(_node);
-    }
+  std::string &name;
+  AssignmentNode(std::string &_name, Node *_node) : name(_name), Node(ASSIGNMENT) { nodes.push_back(_node); }
 
-    virtual ~AssignmentNode()
-    {
-    }
-/*
-    virtual void evaluate() {
-        node->evaluate();
-        assembly.storeLocalVariable();
-    }*/
+  virtual ~AssignmentNode() {}
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
-#endif //IMPALAJIT_ASSIGNMENT_EXPRESSION_HH
+#endif // IMPALAJIT_ASSIGNMENT_EXPRESSION_HH

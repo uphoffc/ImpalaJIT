@@ -18,6 +18,7 @@
  */
 
 #include <impalajit.hh>
+#include <engine.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -67,20 +68,30 @@ void impalajit::Compiler::loadFunctionDefinitionsFromInputFiles(std::string _con
         start = end + 1;
     }
 
-    for(std::vector<std::string>::iterator it = functionFiles.begin(); it != functionFiles.end(); ++it) {
-        std::ifstream in((*it).c_str());
+    for (auto& file: functionFiles) {
+        std::ifstream in(file.c_str());
         functionDefinitions.push_back(std::string((std::istreambuf_iterator<char>(in)),
                                              (std::istreambuf_iterator<char>())));
     }
 }
 
-void impalajit::Compiler::compile(){
-    for(std::vector<std::string>::iterator it = functionDefinitions.begin(); it != functionDefinitions.end(); ++it) {
-        std::map<std::string,dasm_gen_func> parsedFunctions = driver.parse_string((*it));
-        functionMap.insert(parsedFunctions.begin(), parsedFunctions.end());
-        parameterCountMap.insert(std::make_pair(parsedFunctions.begin()->first, driver.getParameterCount()));
-        driver.deleteFunctionContext();
-    }
+void impalajit::Compiler::compile(Options options) {
+  assert(options.isDoublePrecision && "impala: single precision support has not been fully implemented. Please, use double precision");
+
+  auto& jit = impala::engine::Jit::getJit();
+  auto currentModule = jit.createModule(options.isDoublePrecision);
+  std::vector<FunctionContext::FunctionSinatureT> functionSignature;
+  for(auto& definition: functionDefinitions) {
+    functionSignature.emplace_back(driver.generateLLVMFunction(definition, *currentModule, options));
+    driver.deleteFunctionContext();
+  }
+  jit.addModule(currentModule, !options.debug);
+
+  for (auto& signature: functionSignature) {
+    auto function = reinterpret_cast<dasm_gen_func>(jit.lookup(signature.first).getAddress());
+    functionMap[signature.first] = function;
+    parameterCountMap[signature.first] = signature.second;
+  }
 }
 
 dasm_gen_func impalajit::Compiler::getFunction(std::string functionName) {
@@ -97,7 +108,7 @@ unsigned int impalajit::Compiler::getParameterCount(std::string functionName) {
     return parameterCountMap.at(functionName);
 }
 
-void impalajit::Compiler::close(){
+void impalajit::Compiler::close() {
     driver.~Driver();
 }
 

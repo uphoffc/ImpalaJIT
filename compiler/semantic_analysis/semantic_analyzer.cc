@@ -62,18 +62,6 @@ void SemanticAnalyzer::evaluateAst(FunctionContext* &functionContext, Node* &nod
                 break;
             }
         }
-
-        case NEGATION:
-        {
-            // Check if this is just a negative constant.
-            if(node->nodes.size()==1 && node->nodes.at(0)->nodeType==CONSTANT) {
-                double value = -(reinterpret_cast<ConstantNode *>(node->nodes.at(0))->value);
-                delete node;
-                node =  new ConstantNode(value);
-            }
-            dsfUtil(functionContext, node);
-            break;
-        }
         default:
         {
             dsfUtil(functionContext, node);
@@ -84,8 +72,8 @@ void SemanticAnalyzer::evaluateAst(FunctionContext* &functionContext, Node* &nod
 
 
 void SemanticAnalyzer::dsfUtil(FunctionContext* &functionContext, Node* &node) {
-    for(std::vector<Node*>::iterator it = node->nodes.begin(); it != node->nodes.end(); ++it) {
-        evaluateAst(functionContext, (*it));
+    for (auto node: node->nodes) {
+        evaluateAst(functionContext, node);
     }
 }
 

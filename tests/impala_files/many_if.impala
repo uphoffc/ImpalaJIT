@@ -63,4 +63,5 @@ many_if(z, i){
     if(i==3){
         return 67122000000;
     }
+    return 0;
 }

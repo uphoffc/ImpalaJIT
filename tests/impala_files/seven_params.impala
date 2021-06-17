@@ -1,0 +1,5 @@
+seven_params(a, b, c, d, e, f, g) {
+    var1 = a + b - c;
+    var2 = d * e + f / g;
+    return pow(var1, var2);
+}

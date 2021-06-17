@@ -20,39 +20,35 @@
 #ifndef IMPALAJIT_EXTERNAL_FUNCTION_NODE_H
 #define IMPALAJIT_EXTERNAL_FUNCTION_NODE_H
 
-#include <node.h>
+#include "node.h"
+#include "std_math_lib.h"
 #include <iostream>
+#include <sstream>
 
-class ExternalFunctionNode: public Node
-{
+class ExternalFunctionNode : public Node {
 public:
-    std::string &name;
-    ExternalFunctionNode(std::string &_name, std::vector<Node*> &_parameters)
-            : name(_name), Node(EXTERNAL_FUNCTION)
-    {
-        nodes.insert(nodes.end(), _parameters.begin(), _parameters.end());
-    }
-    ExternalFunctionNode(std::string &_name)
-            : name(_name), Node(EXTERNAL_FUNCTION)
-    {
-    }
-    virtual ~ExternalFunctionNode()
-    {
-    }
+  std::string &name;
+  ExternalFunctionNode(std::string &_name, std::vector<Node *> &_parameters) : name(_name), Node(EXTERNAL_FUNCTION) {
+    nodes.insert(nodes.end(), _parameters.begin(), _parameters.end());
+  }
+  ExternalFunctionNode(std::string &_name) : name(_name), Node(EXTERNAL_FUNCTION) {}
+  virtual ~ExternalFunctionNode() {}
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
-class ExternalFunctionParametersNode : public Node
-{
+class ExternalFunctionParametersNode : public Node {
+// TODO: delete
 public:
-    ExternalFunctionParametersNode()
-            : Node(EXTERNAL_FUNCTION_PARAMETER)
-    {
-    }
+  ExternalFunctionParametersNode() : Node(EXTERNAL_FUNCTION_PARAMETER) {}
 
-    virtual ~ExternalFunctionParametersNode()
-    {
-    }
+  virtual ~ExternalFunctionParametersNode() {}
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
-
-#endif //IMPALAJIT_EXTERNAL_FUNCTION_NODE_H
+#endif // IMPALAJIT_EXTERNAL_FUNCTION_NODE_H

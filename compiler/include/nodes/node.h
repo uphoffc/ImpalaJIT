@@ -20,32 +20,31 @@
 #ifndef EXPRESSION_H
 #define EXPRESSION_H
 
+#include "engine.h"
+#include "abstract_visitor.h"
 #include <internal_types.hh>
+#include <iostream>
 #include <vector>
 
-class Node
-{
-public:
-    NodeType nodeType;
-    std::vector<Node*> nodes;
 
-    Node(NodeType _nodeType) :
-            nodeType(_nodeType)
-    {
-    }
-    virtual ~Node()
-    {
-        nodes.clear();
-    }
+class Node {
+public:
+  NodeType nodeType;
+  std::vector<Node *> nodes;
+
+  Node(NodeType _nodeType) : nodeType(_nodeType) {}
+  virtual ~Node() { nodes.clear(); }
+
+  virtual void accept(impala::AbstractVisitor* visitor) = 0;
 };
 
-class RootNode : public Node
-{
+class RootNode : public Node {
 public:
-    RootNode()
-            : Node(ROOT)
-    {
-    }
+  RootNode() : Node(ROOT) {}
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
 #endif // EXPRESSION_H

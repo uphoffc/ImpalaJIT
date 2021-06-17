@@ -22,17 +22,18 @@
 
 #include <node.h>
 
-class CompareNode : public Node
-{
+class CompareNode : public Node {
 public:
-    CompareOperatorType  compareOperator;
-    CompareNode(Node* _left, Node* _right, CompareOperatorType _compareOperator)
-            : Node(COMPARISON),  compareOperator(_compareOperator)
-    {
-        nodes.push_back(_right);
-        nodes.push_back(_left);
-    }
+  CompareOperatorType compareOperator;
+  CompareNode(Node *_left, Node *_right, CompareOperatorType _compareOperator)
+      : Node(COMPARISON), compareOperator(_compareOperator) {
+    nodes.push_back(_right);
+    nodes.push_back(_left);
+  }
+
+  void accept(impala::AbstractVisitor* visitor) override {
+    visitor->visit(this);
+  }
 };
 
-
-#endif //IMPALAJIT_COMPARISON_EXPRESSION_H
+#endif // IMPALAJIT_COMPARISON_EXPRESSION_H

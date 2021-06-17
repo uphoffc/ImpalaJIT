@@ -23,7 +23,7 @@
 
 #include <driver.h>
 #include <scanner.h>
-#include <code_generator.hh>
+#include <code_generator.h>
 #include <semantic_analyzer.hh>
 
 namespace impalajit {
@@ -35,37 +35,36 @@ Driver::~Driver(){
     delete functionContext;
 }
 
-std::map<std::string,dasm_gen_func> Driver::parse_stream(std::istream& in)
-{
-    Scanner scanner(&in);
-    scanner.set_debug(false);
-    this->lexer = &scanner;
+FunctionContext::FunctionSinatureT Driver::generateLLVMFunction(std::istream& in,
+                                                                llvm::Module& module,
+                                                                const impalajit::Options& options) {
+  Scanner scanner(&in);
+  scanner.set_debug(false);
+  this->lexer = &scanner;
 
-    Parser parser(*this);
-    parser.set_debug_level(false);
-    parser.parse();
+  Parser parser(*this);
+  parser.set_debug_level(false);
+  parser.parse();
 
-    SemanticAnalyzer semanticAnalyzer;
-    semanticAnalyzer.performSemanticAnalysis(functionContext);
+  SemanticAnalyzer semanticAnalyzer;
+  semanticAnalyzer.performSemanticAnalysis(functionContext);
 
-    CodeGenerator codeGenerator;
-    dasm_gen_func function = codeGenerator.generateCode(functionContext);
-
-    std::map<std::string,dasm_gen_func> resultMap;
-    resultMap.insert(std::make_pair(functionContext->name, function));
-
-    return resultMap;
+  CodeGenerator codeGenerator;
+  codeGenerator.generateLLVMCode(functionContext, module, options);
+  return std::make_pair(functionContext->name, functionContext->parameters.size());
 }
 
-std::map<std::string,dasm_gen_func> Driver::parse_string(const std::string &input)
-{
-    std::istringstream iss(input);
-    return parse_stream(iss);
+FunctionContext::FunctionSinatureT Driver::generateLLVMFunction(const std::string &input,
+                                                                llvm::Module& module,
+                                                                const impalajit::Options& options) {
+  std::istringstream iss(input);
+  auto signature = generateLLVMFunction(iss, module, options);
+  return signature;
 }
 
 void Driver::deleteFunctionContext(){
     delete functionContext;
-    functionContext = NULL;
+    functionContext = nullptr;
 }
 
 void Driver::setFunctionContext(FunctionContext* _functionContext){
